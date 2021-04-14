@@ -2,25 +2,28 @@
   <div class="row" style="background-color: aquamarine;">
     <div class="col-sm-2 corner"></div>
     <div class="col-sm-8" style="text-align: center;"> 
-      <button style="justify-items: center;" routerLink="/dashboardFund" type="button" class="circularButton btn-success">Fundamentals</button>
-      <button  style="justify-items: center;" routerLink="/text" type="button" class="circularButton btn-danger">Holdings</button>
+      <button  routerLink="/dashboardFund" type="button" class="circularButton btn-success">Analysis</button>
+      <button  routerLink="/dashboardManagement" type="button" class="circularButton btn-danger">Management</button>
     </div>
       <div class="col-sm-2 corner"></div>
   </div>
   <router-outlet></router-outlet>
   <footer style="background-color: blue; color: azure; position: relative;">
-    to do:
-        Get Company info:
-        Single Company:
-            Main Metrics:
-                Revenue
-                EPS
-                PE
-                Shares
-                Price
-                Market Cap
-            All:
-               Re
+    <div class="row">
+      <ul>to do Manager:
+        <li>...Create Nav Bar overhead</li>
+        <li>...Create table to display all holding positions</li>
+      </ul>
+      
+    </div>
+    <div class="row">
+        to do Analysis:
+              Create mock Model of Company: Name, Year, Quarter, Revenue, Market Cap, P/E, EPS, Price, Net Income
+              Provide BS Data
+              Create Table for Revenue, Market Cap, P/E, EPS, Price, Net Income
+              Colour Code Companies and Data Presented
+    </div>
+  
   </footer>
 
 

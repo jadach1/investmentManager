@@ -1,3 +1,4 @@
+import { newArray } from '@angular/compiler/src/util';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -9,12 +10,16 @@ export class DashboardFundComponent implements OnInit {
   selectionList: string[];
 
   constructor() { 
-    this.selectionList.push("Microsoft")
-    this.selectionList.push("Google")
-    this.selectionList.push("Apple","Amazon")
+
   }
 
   ngOnInit(): void {
+      this.selectionList = new Array()
+      this.selectionList.push("MSFT")
+      this.selectionList.push("AMZN","APPL")
   }
 
+  public trialRun(name: String){
+      alert("We are in trial run " + name)
+  }
 }
