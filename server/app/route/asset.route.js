@@ -23,7 +23,15 @@ module.exports = function(capp) {
     capp.get('/api/allassets/:type', CurrentAssets.findAllByType);
 
      // Retrieve all Assets by type and owner
-     capp.get('/api/allassets/:type/:owner', CurrentAssets.findAllByOwner);
+     capp.get('/api/allassets/:type/:owner', CurrentAssets.findAllByOwnerAndType);
+
+     //Retrieve all Assets by Owner
+     capp.get('/api/allassetsOwner/:owner', CurrentAssets.findAllByOwner);
+
+     // Get list of all Asset ames
+     capp.get('/api/assetSymbols/', CurrentAssets.getAssetNames);
+
+     capp.post('/api/insertNewName/:symbol', CurrentAssets.insertNewName)
 
     /*********************** ARCHVIED ASSETS  ***************************/
     capp.put('/api/transferAsset/:id/:status', CurrentAssets.transferAsset);

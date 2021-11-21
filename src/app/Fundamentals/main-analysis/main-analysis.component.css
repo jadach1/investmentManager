@@ -1,0 +1,14 @@
+.one{
+    color: aliceblue;
+    font-family: fantasy;
+}
+
+.centreThis{
+    text-align: center;
+}
+
+.colouredTable{
+    font-family: fantasy;
+    color: aqua;
+    border-color: aqua;
+}

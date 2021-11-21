@@ -1,0 +1,49 @@
+<div class="container">
+    <div class="row">
+        <div class="col"></div>
+    </div>
+    <div class="inline">
+        <!-- DROPDOWN OF COMPANIES-->
+        <div class="row spacer">
+            <div ngbDropdown class="inline">
+            <button class="btn btn-outline-primary inline" ngbDropdownToggle>Select Company</button>
+                <div ngbDropdownMenu >
+                <li ngbDropdownItem *ngFor="let name of companies" (click)="selectCompanyName(name)">{{name}}</li>
+                </div>
+            </div> 
+            <!-- TEXT BOX -->
+             <div class="inline">
+                <input type="text" [(ngModel)]="symbol" placeholder="add new company name" />
+                <button class="btn-outline-primary" (click)="addName()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" *ngIf="selectedCompany">
+    <!-- SELECT STATEMETNS FOR-->
+        <div class="row spacer">
+            <div class="colourMe col-md-8 align">STATEMENTS FOR {{selectedCompany}}</div>
+        </div>
+            <!--SELECT YEAR OR QUARTER-->
+            <div class="row spacer col-md-8">
+                <div class="btn-group align">
+                    <input type="radio" class="btn-check" name="btnradio" id="btnYear" autocomplete="off" (click)="setPeriod('year')" checked>
+                    <label class="btn-outline-success" for="btnYear">Yearly</label>
+                    <input type="radio" class="btn-check" name="btnradio" id="btnQ" autocomplete="off" (click)="setPeriod('quarter')">
+                    <label class="btn-outline-success" for="btnQ">Quarterly</label>
+                </div>
+            </div>
+            <div class="row spacer">
+                
+                    <div class="col">
+                        <button class="btn btn-outline-warning enlarge" (click)="downloadData('income-statement')">Income</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-danger enlarge" (click)="downloadData('balance-sheet-statement')">Balance</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-primary enlarge" (click)="downloadData('cash-flow-statement')">Cash Flow</button>
+                    </div>
+            </div>
+</div>

@@ -1,1 +1,123 @@
-<p>asset-dashboard works!</p>
+
+ <div class="container mt-3">
+  <div class="row">
+    <div class="col-sm-12 mt-3">
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>$</th>
+              </tr>
+              <tbody>
+                <tr class="table-primary">
+                  <td>Total In</td>
+                  <td>{{totalIn}}</td>
+                </tr>
+                <tr class="table-danger">
+                  <td >Total Out</td>
+                  <td>{{totalOut}}</td>
+                </tr>
+                <tr class="table-success">
+                  <td>Current Total</td>
+                  <td>{{currentTotal}}</td>
+                </tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Current Assets</h3>
+          <h4>
+           <div class="row">
+             <div class="col">
+               <div ngbDropdown class="d-inline-block">
+                 <button class="btn btn-outline-success" id="assetTypeZ" ngbDropdownToggle>Asset Type</button>
+                  <div ngbDropdownMenu aria-labelledby="assetType">
+                    <button ngbDropdownItem  (click)="assetType='existing';getAssets(assetType,ownerType)">Existing</button>
+                    <button ngbDropdownItem  (click)="assetType='archived';getAssets(assetType,ownerType)">Archived</button>
+                    <button ngbDropdownItem  (click)="assetType='all';getAssets(assetType,ownerType)">ALL</button>
+                  </div>
+                </div>
+                <div ngbDropdown class="d-inline-block">
+                  <button class="btn btn-outline-success" id="ownerID" ngbDropdownToggle>Owner</button>
+                    <div ngbDropdownMenu aria-labelledby="ownerID">
+                      <button ngbDropdownItem 
+                              *ngFor="let owner of owners"
+                              (click)="getAssets(assetType,owner.id)">
+                                          {{owner.owner}}
+                      </button>
+                    </div>
+                </div>
+                <div class="d-inline-block">
+                  <button class="btn btn-outline-danger" (click)="updatePrice()">Update Prices</button>
+                  <button class="btn btn-outline-warning" (click)="viewPrice()">view</button>
+                </div>
+             </div>
+             <div *ngIf="messageService.messages.length">
+                <div class="row">
+                    <h2>Messages</h2>
+                    <button class="btn btn-outline-success" (click)="messageService.clear()">Clear</button>
+                </div>
+                <div *ngFor="let msg of messageService.messages" 
+                     [style.color]="colourGenSer.generateColour()"
+                     [style.fontFamily]="colourGenSer.generateFont()">
+                    {{msg}}
+                </div>
+             </div>
+           </div>
+          </h4>
+          <table class="table table-striped trial">      
+            <thead>      
+            <tr class="trial">
+
+              <th scope="col">#</th>
+
+              <th scope="col">Symbol</th>
+
+              <th scope="col">Shares</th>
+
+              <th scope="col">Price</th>
+
+              <th scope="col">Total</th>
+
+              <th scope="col">Margin</th>
+
+              <th scope="col">Country</th>
+
+            </tr>     
+            </thead>
+
+            <tbody>    
+            <tr class="btn-outline-secondary jux" 
+                *ngFor="let asset of assets" 
+                (click)="assetDetails(asset.id)" 
+                [routerLink]="['/assetdetails/', asset.id]" 
+                [style.background-color]="fetchBackColour(asset.symbol)">
+
+              <td>{{asset.id}}</td>
+
+              <td>{{asset.symbol}}</td>
+
+              <td>{{asset.shares}} </td>
+
+              <td>{{asset.price}}</td>
+
+              <td>${{asset.currentTotal}}</td>
+
+              <td>{{asset.unRealMargin}}%</td>
+
+              <td>{{asset.country}}</td>
+
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

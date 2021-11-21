@@ -1,0 +1,23 @@
+<div *ngIf="messageService.messages.length">
+    <div class="row">
+        <h2>Messages</h2>
+        <button class="circularButton btn btn-success col-sm-2" (click)="messageService.clear()">Clear</button>
+    </div>
+    <div class="row" *ngFor="let msg of messageService.messages" 
+         [style.color]="colourGenSer.generateColour()"
+         [style.fontFamily]="colourGenSer.generateFont()">
+        {{msg}}
+    </div>
+ </div>
+ <div *ngIf="messageService.errorMessages.length">
+    <div class="row">
+        <h2>Errors</h2>
+        <button class="circularButton btn btn-success col-sm-2" (click)="messageService.clearErrors()">Clear</button>
+    </div>
+    <div class="row" *ngFor="let msg of messageService.errorMessages" 
+         [style.color]="colourGenSer.generateColour()"
+         [style.fontFamily]="colourGenSer.generateFont()">
+        {{msg}}
+    </div>
+ </div>
+

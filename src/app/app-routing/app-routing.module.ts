@@ -4,7 +4,8 @@ import { RouterModule, Routes } from '@angular/router';
 import {AppComponent}               from '../app.component'
 import {DashboardFundComponent}     from '../Fundamentals/dashboard-fund/dashboard-fund.component'
 import {ManagerDashboardComponent}  from '../Management/manager-dashboard/manager-dashboard.component'
-import { AssetDashboardComponent }  from '../Management/asset-dashboard/asset-dashboard.component';
+import {AssetDashboardComponent}    from '../Management/asset-dashboard/asset-dashboard.component';
+import {AssetDetailsComponent}      from '../Management/asset-details/asset-details.component';
 
 
 const routes: Routes = [
@@ -12,7 +13,7 @@ const routes: Routes = [
     {path: 'home', component: AppComponent},
     {path: 'dashboardFund', component: DashboardFundComponent},
     {path: 'dashboardManagement', component: ManagerDashboardComponent},
-
+    {path: 'assetdetails/:id', component: AssetDetailsComponent},
 ];
 
 @NgModule({

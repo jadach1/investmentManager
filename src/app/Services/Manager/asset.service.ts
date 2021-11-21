@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable }              from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { asset } from '../../../models/Manager/asset';
-import {map} from 'rxjs/operators';
-import { Observable} from 'rxjs';
+import { asset }                   from '../../../models/Manager/asset';
+import { Observable}               from 'rxjs';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -26,15 +25,15 @@ export class AssetService {
 
   // return all assets from the database table assets
   getAllAssetsByType (type: string): Observable<asset[]> {
-    // type referse to the assettype: existing, archived, pure
+    // type refers to the assettype: existing, archived, pure
     const route = type == "all" ? "currentassets" : "allassets/"+type;
     return this.http.get<asset[]>(this.Url+route)
   }
 
   // return all assets from the database table assets
   getAllAssetsByOwner (type: string, ownerid: number): Observable<asset[]> {
-    // type referse to the assettype: existing, archived, pure
-    const route =  "allassets/"+type+"/"+ownerid;
+    // type refers to the assettype: existing, archived, pure
+    const route =  type == "all" ? "allassetsOwner/"+ownerid : "allassets/"+type+"/"+ownerid;
     return this.http.get<asset[]>(this.Url+route)
   }
 
@@ -64,5 +63,23 @@ export class AssetService {
     const url = `${this.Url + 'currentExistingAssets'}/${symbol}/${ownerid}`;
     return this.http.get<asset>(url);
   }
-  
+ 
+  /****************************MISC ASSET OPERATIONS ************************ */
+   //Update Price of an Asset and Calculate
+   updateAssetPrice (updatedAsset: asset,newPrice: number): Promise<asset>{
+    // This will uodate the current price as well as calculate the currentTotal and other totals.
+    return new Promise(res=> res( updatedAsset.price = newPrice
+                )).then(res=>{
+                    updatedAsset.currentTotal = updatedAsset.price * updatedAsset.shares;
+                }).then(res=> {
+                  updatedAsset.realProfit = updatedAsset.totalMoneyOut - updatedAsset.totalMoneyIn;
+                  updatedAsset.unRealProfit = (updatedAsset.totalMoneyOut * 1 + updatedAsset.currentTotal * 1) - updatedAsset.totalMoneyIn * 1;
+                }).then(res=> {
+                  console.log("updated price is: " + updatedAsset.symbol + " : " + updatedAsset.unRealProfit)
+                  updatedAsset.realMargin =   updatedAsset.realProfit / updatedAsset.totalMoneyIn  * 100;
+                  updatedAsset.unRealMargin = updatedAsset.unRealProfit / updatedAsset.totalMoneyIn * 100;
+                }).catch(err =>{
+                    alert("error when trying to update Price " + err)
+                }).then(res => updatedAsset )
+ }
 }

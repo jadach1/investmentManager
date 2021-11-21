@@ -4,14 +4,22 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class MessageService {
+  messages: string[]= [];
+  errorMessages: string[] = [];
 
-  messages: string[] = [];
-
-  add(message: string) {
+  add(message: string){
     this.messages.push(message);
   }
 
-  clear() {
+  clear(){
     this.messages = [];
+  }
+
+  addError(message: string){
+    this.errorMessages.push(message);
+  }
+
+  clearErrors(){
+    this.errorMessages = [];
   }
 }

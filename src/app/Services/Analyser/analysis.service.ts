@@ -1,31 +1,94 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import {MessageService} from '../Messages/message.service'
+import { Injectable }              from '@angular/core';
+import { Observable, of }          from 'rxjs';
+import {MessageService}            from '../Messages/message.service'
+import {Company}                   from '../../../Models/Analyser/Company'
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { element } from 'protractor';
 
-import {Company} from '../../../Models/Analyse/Company'
-
-const COMPANIES: Company[] = [
-  {  id:1,name:"MSFT",year:2018,quarter:"",Revenue:100,MarketCap: 1000,PE: 45,EPS: 5,Price:100,NetIncome: 1534},
-  {  id:1,name:"MSFT",year:2019,quarter:"",Revenue:140,MarketCap: 1500,PE: 75,EPS: 6 ,Price:167,NetIncome: 1965},
-  {  id:1,name:"MSFT",year:2020,quarter:"",Revenue:219,MarketCap: 2245,PE: 87,EPS: 8 ,Price:254,NetIncome: 3222},
-  {  id:1,name:"AMZN",year:2018,quarter:"",Revenue:50,MarketCap: 800,PE: 100,EPS: -1 ,Price:676,NetIncome: -12},
-  {  id:1,name:"AMZN",year:2019,quarter:"",Revenue:90,MarketCap: 1100,PE: 150,EPS: -5,Price:876,NetIncome: -343},
-  {  id:1,name:"AMZN",year:2020,quarter:"",Revenue:109,MarketCap: 1985,PE: 226,EPS: 2,Price:999,NetIncome: 123},
-  {  id:1,name:"GOOG",year:2018,quarter:"",Revenue:88,MarketCap: 543,PE: 23,EPS: 23  ,Price:234,NetIncome: 1456},
-  {  id:1,name:"GOOG",year:2019,quarter:"",Revenue:323,MarketCap: 643,PE: 654,EPS: 54,Price:432,NetIncome: 1243},
-  {  id:1,name:"GOOG",year:2020,quarter:"",Revenue:109,MarketCap: 1234,PE: 123,EPS: 66,Price:456,NetIncome: 1890},
-]
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnalysisService {
 
-  constructor(private messageService: MessageService) { }
+  list: any[];
 
-  getCompanies(): Observable<Company[]>{
-     const companies = of(COMPANIES);
-     this.messageService.add('Analysis Service: Fetched Companies');
-     return companies;
+  constructor(private messageService: MessageService,
+              private http: HttpClient) 
+              { }
+
+  // Return API data from external API
+  companyInfo(company: string): Observable<Company>{
+     let url = 'https://financialmodelingprep.com/api/v3/quote/' + company + '?apikey=3340dea2b67650a5e57a77796910cb55';
+     return this.http.get<Company>(url);
   }
+
+  // Get Data fill names
+  assetNames(): Observable<object>{
+    let url = "http://localhost:8080/api/assetSymbols";
+    return this.http.get<object>(url);
+  }
+
+  //Creates a new Asset name for list of Assets in Get Data
+  newAssetName(symbol: string):Observable<object>{
+    let url = "http://localhost:8080/api/insertNewName/" + symbol;
+    return this.http.post(url, httpOptions)  
+  }
+
+   // Return API data from external API
+  getFinancialData(symbol: string,statement: string,period: string):Observable<object>{
+    const key = '3340dea2b67650a5e57a77796910cb55';
+    let limit: string;
+    console.log(period)
+    period == "quarter" ? limit = "?period=quarter&limit=400" : limit = "?limit=120";
+
+    let URL   = 'https://financialmodelingprep.com/api/v3/'+statement+'/'+symbol+limit+'&apikey='+key;
+
+    if (symbol == "" || statement == ""){
+      console.log("Can't fetch data for blank: " + symbol + " : " + statement)
+    } else {
+      console.log(URL)
+      return this.http.get<object>(URL);
+    }
+  }
+
+  // Sends Data to DB from 3rd party API
+  postFinancialData(data: string) {
+    let url = "http://localhost:8080/api/uploadFinancialInfo/";
+    return this.http.post(url, data, httpOptions) 
+  }
+
+  // Returns Distinct company names from the list of companies in financials table
+  getCompanyNames(): Observable<object> {
+    let url = "http://localhost:8080/api/financialCompanyNames/";
+    return this.http.get<object>(url);
+  }
+
+   // Returns Distinct Categories
+   getCategories(): Observable<object> {
+    let url = "http://localhost:8080/api/getCategories/";
+    return this.http.get<object>(url);
+  }
+
+  //Returns Quarterly or Yearly Financial Data for a Company After Preparing the Data Call
+  getSelectedData(list: Array<string>,company: string,period: string): Observable<object> {
+    let categories = "";
+    // We have a list of categories ie revenue eps grossprofit
+    // We need to transoform them into a single string with ' apostrophe's encapsulating each word and seperated by a comma
+    // And make sure the last word doesn't have a comma attached
+    for(let x = 0;x < list.length; x++){
+      if(x+1 == list.length)
+          categories += "'"+list[x]+"'" // this is the end
+      else
+          categories += "'"+list[x] + "',"
+    }
+    //Make search string for api
+    let str = "singleCompanyCategories/" + categories + "/" + company + "/" + period
+    let url = "http://localhost:8080/api/" + str
+    return this.http.get<object>(url);
+  }
+
 }

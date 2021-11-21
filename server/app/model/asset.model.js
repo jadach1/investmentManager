@@ -1,14 +1,13 @@
 module.exports = (sequelize, Sequelize) => {
 	const asset = sequelize.define('asset', {
 		symbol: {
-			type: Sequelize.STRING(6)
+			type: Sequelize.STRING(10)
  		 },
 	  	shares: { // total shares bought 
-				type: Sequelize.INTEGER,
+				type: Sequelize.DECIMAL(12,2),
 				defaultValue: 0,
 				validate: {
-					min: 0,
-					isInt: true
+					min: 0
 				}
 		},
 		avgprice: { // originalMoney / shares
@@ -20,11 +19,10 @@ module.exports = (sequelize, Sequelize) => {
 				}
 		},
 		sharesSold: { // total shares sold 
-				type: Sequelize.INTEGER,
+				type: Sequelize.DECIMAL(12,2),
 				defaultValue: 0,
 				validate: {
-					min: 0,
-					isInt: true
+					min: 0
 				}
 		},
 		avgpriceSold: { // total money out / shares sold
@@ -106,6 +104,10 @@ module.exports = (sequelize, Sequelize) => {
 		ownerid: {
 			type: Sequelize.INTEGER
  		 },
+		country: {
+			type: Sequelize.STRING(6),
+			defaultValue: 'US',
+		},
 	});
 	
 	return asset;

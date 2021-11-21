@@ -1,0 +1,48 @@
+#container {
+    height: 100%;
+    width: 200%;
+    display: flex;
+  }
+
+  #leftForm {
+    background-color: blue;
+  }
+  #rightForm {
+    background-color: green;
+  }
+  #middleForm {
+    width: 10%;
+    background-color: white;
+    
+  }
+
+  #tableBorder, td {
+    color: antiquewhite;
+    border: 1px solid white;
+    padding:0 15px 0 15px; 
+  }
+
+    th, #gold {
+    color: gold;
+  }
+
+  #Margin1 {
+    margin: 35px 0px 35px 0px
+  }
+
+  #heading {
+    text-align: center;
+    font-size: 16pt;
+    color: yellowgreen;
+  }
+
+  #heading2 {
+    text-align: center;
+    font-size: 24pt;
+    color: black;
+  }
+
+  #tableClean {
+    border: 0px transparent white;
+    padding:0 15px 0 15px; 
+  }

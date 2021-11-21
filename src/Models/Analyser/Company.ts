@@ -1,12 +1,6 @@
 export class Company{
-    id:        any;
-    name:      string;
-    year:      number;
-    quarter:   any;
-    Revenue:   number;
-    MarketCap: number;
-    PE:        number;
-    EPS:       number;
-    Price:     number ;
-    NetIncome: number;
+  name: string;
+  quarter: number;
+  year: number;
+  data: Map<string,number>;
 }

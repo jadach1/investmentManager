@@ -1,21 +1,24 @@
 <div class="row">
     <div class="col-sm-2 flex sidePanel">
-     <div ngbDropdown class="d-inline-block">
-      <button class="btn btn-outline-primary" ngbDropdownToggle>Select Company</button>
-      <div ngbDropdownMenu >
-        <li ngbDropdownItem *ngFor="let name of selectionList" (click)="trialRun(name)">{{name}}</li>
-      </div>
-     </div> 
+
+     <h1>DATA OPTIONS</h1>
+     <div>
+        <button class="btn btn-outline-success sameSize" (click)="flipView('get')">GET</button>
+     </div>
+     <div>
+       <button class="btn btn-outline-primary sameSize" (click)="flipView('display')">DISPLAY</button>
+     </div>
    </div>
     <div class="col-md-8 flex"> 
-        <app-main-analysis 
-                style="color: blue; 
-                       font-size: x-large; 
-                       font-weight: bolder;">
-        </app-main-analysis>
+      <div *ngIf="dataGet">
+        <app-data-manager></app-data-manager>
+      </div>
+      <div *ngIf="dataDisplay">
+        <app-main-analysis></app-main-analysis>
+      </div>
     </div>
     <div class="col-sm-2 flex sidePanel">
-        f
+      <app-messages></app-messages>
     </div>
 </div>
 

@@ -1,20 +1,42 @@
 export class asset {
-    id:            any;
+    id:            number;
     symbol:        string;
-    shares:        any = 0;
-    avgprice:      any = 0;
-    sharesSold:    any= 0;
-    avgpriceSold:  any= 0;
-    originalMoney: any= 0;
-    totalMoneyIn:  any= 0;
-    totalMoneyOut: any= 0;
-    price:         any= 0;
-    currentTotal:  any= 0;
-    realProfit:    any= 0;
-    realMargin:    any= 0;
-    unRealProfit:  any= 0;
-    unRealMargin:  any= 0;
+    shares:        number = 0;
+    avgprice:      number = 0;
+    sharesSold:    number= 0;
+    avgpriceSold:  number= 0;
+    originalMoney: number= 0;
+    totalMoneyIn:  number= 0;
+    totalMoneyOut: number= 0;
+    price:         number= 0;
+    currentTotal:  number= 0;
+    realProfit:    number= 0;
+    realMargin:    number= 0;
+    unRealProfit:  number= 0;
+    unRealMargin:  number= 0;
     assettype:     any;
-    ownerid:       any;
+    ownerid:       number;
+    country:       string;
+}
+
+export class mockAsset {
+    id:            string;
+    symbol:        string;
+    shares:        string ;
+    avgprice:      string ;
+    sharesSold:    string;
+    avgpriceSold:  string;
+    originalMoney: string;
+    totalMoneyIn:  string;
+    totalMoneyOut: string;
+    price:         string;
+    currentTotal:  string;
+    realProfit:    string;
+    realMargin:    string;
+    unRealProfit:  string;
+    unRealMargin:  string;
+    assettype:     any;
+    ownerid:       string;
+    country:       string;
 }
 

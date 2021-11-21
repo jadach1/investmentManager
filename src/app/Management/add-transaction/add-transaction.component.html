@@ -1,0 +1,84 @@
+<form #userForm="ngForm" (ngSubmit)="userForm.form.valid && onSubmit(userForm)">
+    <div class="form-group">
+        <label>Owner</label>
+        <select class="form-control" name="owner" [(ngModel)]="newTransaction.ownerid" #owner="ngModel" 
+                [ngClass]="{'is-invalid': userForm.submitted && owner.invalid}" required> 
+            <option value="" >Choose Owner...</option>
+            <option [value]=owner.id *ngFor="let owner of owners">{{owner.owner}}</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="userForm.submitted && owner.invalid">
+            <p *ngIf="owner.errors.required">Owner is Required</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Symbol</label>
+        <input type="text"  class="form-control" name="symbol" [(ngModel)]="newTransaction.symbol" #symbol="ngModel" 
+               [ngClass]="{ 'is-invalid': userForm.submitted && symbol.invalid }" required>
+        <div class="invalid-feedback" *ngIf="userForm.submitted && symbol.invalid">
+            <p *ngIf="symbol.errors.required">Symbol is required</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Price</label>
+        <input type="number" class="form-control" name="price" [(ngModel)]="newTransaction.price" #price="ngModel" 
+                [ngClass]="{'is-invalid': userForm.submitted && price.invalid }" required>
+        <div class="invalid-feedback" *ngIf="userForm.submitted && price.invalid">
+            <p *ngIf="price.errors.required">Price is Required</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Shares</label>
+        <input type="number" class="form-control" name="shares" [(ngModel)]="newTransaction.shares" #shares="ngModel" 
+                [ngClass]="{'is-invalid': userForm.submitted && shares.invalid}" required >
+                <div class="invalid-feedback" *ngIf="userForm.submitted && shares.invalid">
+                    <p *ngIf="shares.errors.required">Shares are required</p>
+                    <p *ngIf="shares.errors.number">Number needed</p>
+                </div>
+    </div>
+
+    <div class="form-group">
+        <label>Date</label>
+        <input type="date" class="form-control" name="buydate" [(ngModel)]="newTransaction.buydate" #date="ngModel" 
+                [ngClass]="{'is-invalid' : userForm.submitted && date.invalid}" required>
+        <div class="invalid-feedback" *ngIf="userForm.submitted && date.invalid">
+            <p *ngIf="date.errors.required">Date is required</p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Transaction</label>
+        <select class="form-control" name="transaction" [(ngModel)]="newTransaction.transaction" #transaction="ngModel" 
+                [ngClass]="{'is-invalid': userForm.submitted && transaction.invalid}" required>
+            <option  value=t>Buy</option>
+            <option  value=f>Sell</option>
+        </select>
+        <div class="invalid-feedback" *ngIf="userForm.submitted && transaction.invalid">
+            <p *ngIf="transaction.errors.required">Transaction Required</p>
+        </div>
+    </div>
+
+    &nbsp;
+    <hr>
+        <div class="form-group">
+            <button class="btn btn-success btn-block">Ok</button>
+            <button class="btn btn-block btn-info" (click)="clearForm(userForm)">Clear</button>
+        </div>
+</form>
+
+<div *ngIf="messageService.messages.length">
+    <div class="row">
+        <h2 class="messageCenter col-12">Messages</h2>
+        <button class="clear col-sm-2"
+                (click)="messageService.clear()">
+                Clear Messages
+        </button>
+    </div>
+    <div class="message" *ngFor="let msg of messageService.messages"
+         [style.color]="colourGenerator.generateColour()"
+         [style.fontFamily]="colourGenerator.generateFont()">
+        - {{msg}}
+    </div>
+</div>

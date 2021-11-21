@@ -1,0 +1,38 @@
+<div class="card">
+    <p>transactions works!</p>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Symbol</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>buy date</th>
+                </tr>
+            </thead>
+            <tbody *ngFor="let tranny of transactions"  [ngStyle]="{background: getColour(tranny.transaction)}">
+               <tr>
+                <td>{{tranny.id}}</td>
+                <td>{{tranny.symbol}}</td>
+                <td>{{tranny.shares}}</td>
+                <td>{{tranny.price}}</td>
+                <td>{{tranny.buydate}}</td>
+               </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <div *ngIf="messageService.messages.length">
+            <div class="row">
+                <h2>Messages</h2>
+                <button class="btn btn-outline-success" (click)="messageService.clear()">Clear</button>
+            </div>
+            <div *ngFor="let msg of messageService.messages" 
+                 [style.color]="colourGenSer.generateColour()"
+                 [style.fontFamily]="colourGenSer.generateFont()">
+                {{msg}}
+            </div>
+         </div>
+    </div>
+</div>

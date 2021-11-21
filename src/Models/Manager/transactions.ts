@@ -4,7 +4,7 @@ export class transaction {
     shares: any;
     price: any;
     buydate: Date;
-    transaction: Boolean;
+    transaction: any;
     total: any;
     ownerid: any;
 }

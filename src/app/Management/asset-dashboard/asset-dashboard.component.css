@@ -1,0 +1,17 @@
+.trial{
+    border-style: solid;
+    border: 5px;
+    border-color:cyan;
+}
+
+.jux:hover{
+   font-size: 40px;
+   font-weight: bolder;
+   border-style: dotted;
+   border-width: 5px;
+   border-color: black;
+}
+
+.jux{
+    color: black;
+}

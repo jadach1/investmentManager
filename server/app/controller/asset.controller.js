@@ -20,6 +20,7 @@ exports.create = (req, res) => {
 				"price"			:req.body.price,
 				"currentTotal"	:req.body.currentTotal,
 				"ownerid"		:req.body.ownerid,
+				"country"		:req.body.country,
 			}).then(CurrentAsset => {		
 			console.log("Creating Asset ");	
 			// Send created CurrentAsset to client
@@ -55,8 +56,23 @@ exports.findAllByType = (req, res) => {
 		});
 };
 
-// FETCH All Transactions by a specific type and by owner id ie "existing or archived for owner 1"
+// ALL ASSETS BY OWBER
 exports.findAllByOwner = (req, res) => {
+	const id=req.params.owner;
+	db.sequelize
+		.query('select * from assets where ownerid ='+id+';')
+		.then(Asset => {
+			// Send All CurrentAssets to Client
+			res.json(Asset[0].sort(function(c1, c2){return c1.id - c2.id}));
+		}).catch(err => {
+			console.log(err);
+			res.status(500).json({msg: "error", details: err});
+		});
+};
+
+
+//ALL ASSETS BY OWNER AND TYPE
+exports.findAllByOwnerAndType = (req, res) => {
 	const type=req.params.type;
 	const id=req.params.owner;
 	db.sequelize
@@ -108,23 +124,6 @@ exports.delete = (req, res) => {
 		});
 };
 
-
-// Return a true or false value to see if an Asset already exists
-exports.check = (req, res) => {
-	const symbol = req.params.symbol;
-	console.log("");
-	db.sequelize
-		.query('select exists(select 1 from assets where symbol=\'' + symbol + '\');')
-			.then(expires => {
-				// Send All TransactionObjects to Client
-				res.json(expires[0]);
-				console.log("we are checking to see if asset exists " + expires[0]);
-			}).catch(err => {
-				console.log(err);
-				res.status(500).json({msg: "error", details: err});
-			});
-};
-
 /*************** ARCHIVE ASSETS *******************************/
 
 // transfer a CurrentAsset by ID to archived status saved in type
@@ -149,11 +148,32 @@ exports.checkIfExists = (req, res) => {
 									ownerid: id,
 									assettype: "existing"
 								}   
-	}).then(Asset => {
-		// Send All CurrentAssets to Client
-		res.json(Asset);
-	}).catch(err => {
-		console.log(err);
-		res.status(500).json({msg: "error could not find asset", details: err});
-	});
+		}).then(Asset => {
+			// Send All CurrentAssets to Client
+			res.json(Asset);
+		}).catch(err => {
+			console.log(err);
+			res.status(500).json({msg: "error could not find asset", details: err});
+		})
+	};
+
+	/* GET ALL ASSET NAMES */
+
+	exports.getAssetNames = (req, res) => {	
+		const owner = req.params.owner;
+		db.sequelize.query('select * from company_names')
+					.then(
+							asset => res.json(asset)
+				  ).catch(
+					  		err => console.log(err)
+				  )
+	};
+
+	exports.insertNewName = (req, res) => {
+		const symbol = req.params.symbok;
+		db.sequelize.query('insert into company_names (symbol) values ('  + symbol + ') ')
+					.then( asset => 
+								 res.status(200).json( {msg: "successfully added company: " + symbol + " :: " + asset})
+							) 
+					.catch( err  => res.status(500).json(err))
 	};

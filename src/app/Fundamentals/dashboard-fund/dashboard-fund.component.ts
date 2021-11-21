@@ -1,5 +1,5 @@
-import { newArray } from '@angular/compiler/src/util';
 import { Component, OnInit } from '@angular/core';
+import {AnalysisService} from '../../Services/Analyser/analysis.service'
 
 @Component({
   selector: 'app-dashboard-fund',
@@ -7,19 +7,26 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./dashboard-fund.component.css']
 })
 export class DashboardFundComponent implements OnInit {
-  selectionList: string[];
+  dataGet = false;
+  dataDisplay = false
 
-  constructor() { 
+  constructor(private analService: AnalysisService) { 
 
   }
 
   ngOnInit(): void {
-      this.selectionList = new Array()
-      this.selectionList.push("MSFT")
-      this.selectionList.push("AMZN","APPL")
   }
 
-  public trialRun(name: String){
-      alert("We are in trial run " + name)
-  }
+ public flipView(state: string){
+    switch (state){
+      case 'get': 
+                  this.dataGet = true; 
+                  this.dataDisplay = false;
+                  break;
+      case 'display': 
+                  this.dataDisplay = true; 
+                  this.dataGet = false; 
+                  break;
+    }
+ }
 }
