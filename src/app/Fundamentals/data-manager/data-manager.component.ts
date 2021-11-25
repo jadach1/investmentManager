@@ -21,7 +21,14 @@ export class DataManagerComponent implements OnInit {
   selectedCompany: string = "";
   period: string = "year";
   symbol: string;
+  statement: string = "";
 
+  tableIncome: string[] =  ["revenue","grossProfit","operatingIncome","netIncome","eps","weightedAverageShsOut"];
+  tableBalance: string[] = ["cashAndCashEquivalents","inventory","totalCurrentAssets","propertyPlantEquipmentNet","totalAssets","totalCurrentLiabilities","totalLiabilities","totalEquity"]
+  tableCash: string[] =    ["netCashProvidedByOperatingActivities","netCashUsedForInvestingActivites","debtRepayment","netCashUsedProvidedByFinancingActivities","netChangeInCash","capitalExpenditure","freeCashFlow"]
+
+  tableMap: Map<string,string[]>;
+  
   constructor(private analService: AnalysisService, 
               public msgService: MessageService) { }
 
@@ -33,6 +40,9 @@ export class DataManagerComponent implements OnInit {
                                 err => console.log("error fetching asset names: " + err),
                                 ()  => this.sortIt(this.tempList)
                     )
+    this.tableMap = new Map( [["income-statement",this.tableIncome], 
+                              ["balance-sheet-statement",this.tableBalance],
+                              ["cash-flow-statement",this.tableCash]])
   }
 
   //Fetches the names of all the assets into an array for display to user
@@ -57,26 +67,26 @@ export class DataManagerComponent implements OnInit {
       this.period = p;
   }
 
-  //Pulls data for company; Passes data to parsing function, sends parsed data for upload to DB
-  public downloadData(statement: string) {
-      console.log(statement + "," + this.period + "," + this.selectedCompany)
-       //Will hold all of the insert statements into the Database
-      let arrayOfData = new Array();
-       //Service Call
+  //Get Data from 3rd party API
+  public downloadData() {
+      console.log(this.statement + "," + this.period + "," + this.selectedCompany)
+       //Get Data from API
       let tempArray = this.analService
-                      .getFinancialData(this.selectedCompany,statement,this.period)
+                      .getFinancialData(this.selectedCompany,this.statement,this.period)
                       .subscribe(
                                   res => tempArray = res,
                                   err => console.log("failed getting financial Data: " + err),
-                                  ()  => this.parseData(tempArray, statement,this.period)
+                                  // Manage Data Retrieved
+                                  ()  => this.parseData(tempArray,this.statement,this.period)
                                       .then(
+                                            // Post Desired data to DB
                                             r => this.analService.postFinancialData(r)
                                                 .subscribe(
                                                               r => console.log("posting Financial Info"),
                                                               e => console.log(e)
                                                 )
                                             )
-                  )
+                      )
   }
 
   /*
@@ -93,12 +103,14 @@ export class DataManagerComponent implements OnInit {
     } else {
        //Will hold all of the insert statements into the Database
       let arrayOfData = new Array();
-       //List of items we want from the Income, Balance and Cash Flow Statements
-      let tableNames = ["revenue","grossProfit","operatingIncome","netIncome","eps","weightedAverageShsOut"];
+       //matches statement to array of table names we want
+      let tableNames = this.tableMap.get(statement);
+      console.log(tableNames)
       //Loop through each quarter/year of the fetched data
       tempArray.forEach(report => {
-        //Loop through each table of data we are looking for: Revenue, Cash, Debt etc
+        //Loop through each table we are looking for: Revenue, Cash, Debt etc
         tableNames.forEach(table => {
+                  //Each key int the report is: Revenue, Cash, Debt etc
                   for (const key in report) {
                     //Loop through each element until it matches the table name i.e Revenue to Revenue Table
                     if( table == key){

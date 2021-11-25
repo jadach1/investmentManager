@@ -20,13 +20,13 @@ export class MainAnalysisComponent implements OnInit {
   categories: any; //List of Categories from DB
   searchModule: boolean = false; //Hides or Displays the checkbox selections
   displayModule: boolean = false; //Hide or Displays the results of the search
-  listOfCategories: string[]; //Selected List of Categories 
+  listOfCategories: string[]; //Selected List of Categories from user
  
   //Display Variables & Objects
    companySelected = "?";
-   periodSelected:  string;
+   periodSelected:  string = "";
    masterCompanyList: Company[] = [];
-;
+
   constructor(private analService: AnalysisService,public messageService: MessageService) { }
 
   ngOnInit(): void {
@@ -74,27 +74,26 @@ export class MainAnalysisComponent implements OnInit {
       this.companySelected = name;
   }
 
- 
+  public clearCompany(){
+      this.masterCompanyList = [];
+      this.listOfCategories = new Array();
+      this.periodSelected = "";
+      this.companySelected = "?";
+  }
 
   /***************************************************************************\
-      These functions x3 will fetch the Data of a company depending on Search Criteria
+      These 4 functions will fetch the Data of a company depending on Search Criteria
   \****************************************************************************/
-  public fetchData(){
+  public checkLength(){
     //Make sure a company and period are selected
-    if(this.companySelected != undefined && this.periodSelected != undefined){
-      //If no options are selected for search assume 'all'
-      if(this.listOfCategories.length == 0)
-          this.convertList().then(
-            res =>  
-                  this.analService
-                      .getSelectedData(this.listOfCategories,this.companySelected,this.periodSelected)
-                      .subscribe(
-                                  res => this.parseFinancialData(res),
-                                  err => {this.messageService.add("Error getting search results: "),this.messageService.add(err)}
-                      ) 
-          )
+    if(this.companySelected != "?" && this.periodSelected != ""){
+      //If length is zero than assume we want all options, 
+      //so we will upload all options to the listOfCategories
+      if(this.listOfCategories.length == 0) {
+        this.convertList().then(  res =>  this.fetchData() )
+      } else { this.fetchData() } 
     } else {
-      this.messageService.add("Error, You need to Select a company and period in order for this to work")
+      this.messageService.addError("Error, You need to Select a company and period in order for this to work")
     }
   }
 
@@ -106,7 +105,18 @@ export class MainAnalysisComponent implements OnInit {
     return null;
   }
 
-    //Seperate Financial Data below
+  //Service call to DB
+  private fetchData(){
+    this.analService
+    .getSelectedData(this.listOfCategories,this.companySelected,this.periodSelected)
+    .subscribe(
+                res => this.parseFinancialData(res),
+                err => {this.messageService.addError("Error getting search results: "),
+                        this.messageService.addError(err)},
+    ) 
+  }
+
+    //Seperate Financial from this
     /*
         category: revenue, 
         period: "year", 
@@ -165,13 +175,23 @@ export class MainAnalysisComponent implements OnInit {
     }); // Loop through array of Company info from DB
   }
 
+
   /***************************************************************************\
       DISPLAY DATA 
   \****************************************************************************/
-  public fetchCategoryValue(category: string) {
-    console.log(category)
+  public fetchCategoryValue(category: string): number[] {
+    let values: number[] = [];
+    this.masterCompanyList.forEach(company => {
+      values.push(company.data.get(category));
+     // console.log( "Getting " + category + " : " + company.data.get(category) + " for " + company.year) 
+    })
+    return values;
   }
 
+  
+  /***************************************************************************\
+      SORTING DATA 
+  \****************************************************************************/
   // Makes sure this list is sorted by Year - Ascending
   public sortMasterListAsc() {
     for(let i = 0; i < this.masterCompanyList.length; i++){
@@ -204,10 +224,12 @@ export class MainAnalysisComponent implements OnInit {
   \****************************************************************************/
  
   public getData() {  
-    console.log(this.masterCompanyList)
+    console.log(this.listOfCategories)
   }
 
   public showData(){
     console.log(this.masterCompanyList)
   }
+
+  
 }

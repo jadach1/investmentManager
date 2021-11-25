@@ -7,8 +7,31 @@
     text-align: center;
 }
 
+
 .colouredTable{
     font-family: fantasy;
     color: aqua;
     border-color: aqua;
+}
+
+.line{
+    padding: 50px;
+    border-top: 5px;
+    border-top-color: aqua;
+    border-top-style: solid;
+    border-bottom: 5px;
+    border-bottom-color: aqua;
+    border-bottom-style: solid;
+}
+
+.bottomBorder{
+    border-bottom: 1px;
+    border-bottom-color: aqua;
+    border-bottom-style: solid;
+    color: blueviolet;
+}
+.rightBorder{
+    border-right: 1px;
+    border-right-color: aqua;
+    border-right-style: solid;
 }

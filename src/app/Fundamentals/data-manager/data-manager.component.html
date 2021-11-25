@@ -34,16 +34,20 @@
                     <label class="btn-outline-success" for="btnQ">Quarterly</label>
                 </div>
             </div>
-            <div class="row spacer">
+            <div class="row">
                 
                     <div class="col">
-                        <button class="btn btn-outline-warning enlarge" (click)="downloadData('income-statement')">Income</button>
+                        <button class="btn btn-outline-warning enlarge" (click)="statement='income-statement'">Income</button>
                     </div>
                     <div class="col">
-                        <button class="btn btn-outline-danger enlarge" (click)="downloadData('balance-sheet-statement')">Balance</button>
+                        <button class="btn btn-outline-danger enlarge" (click)="statement='balance-sheet-statement'">Balance</button>
                     </div>
                     <div class="col">
-                        <button class="btn btn-outline-primary enlarge" (click)="downloadData('cash-flow-statement')">Cash Flow</button>
+                        <button class="btn btn-outline-primary enlarge" (click)="statement='cash-flow-statement'">Cash Flow</button>
                     </div>
+            </div>
+            <div class="row" *ngIf="statement">
+                <h2 class="row centreThis">{{statement}}</h2>
+                <button class="btn btn-danger enlarge  centreThis" (click)="downloadData()">Submit</button>
             </div>
 </div>

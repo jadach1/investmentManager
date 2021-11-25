@@ -39,4 +39,7 @@
     background-color:chartreuse;
 }
 
+centreThis{
+  text-align: center;
+}
 @import "../node_modules/bootstrap/dist/css/bootstrap.min.css"
