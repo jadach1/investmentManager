@@ -7,8 +7,11 @@ module.exports = function(app) {
     // Get Financial Info 
     app.get('/api/financialInfo/:symbol/:period/:statement', analysis.getFinancials)
 
-   //Get all Company names
+    //Get all Company names
     app.get('/api/financialCompanyNames', analysis.getCompanyNames)
+
+    // Get list of all Asset ames
+    app.get('/api/assetSymbols/', analysis.getAssetNames);
 
     //GET categories
     app.get('/api/getCategories', analysis.getCategories)

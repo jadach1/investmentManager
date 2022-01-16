@@ -1,0 +1,69 @@
+ <div class="row borderRed">
+     <p>Criteria</p>
+      <!--DROP DOWN OF COMPANIES TO SELECT-->
+   <div ngbDropdown class="row">
+        <button class="col-sm-4 btn btn-success"  ngbDropdownToggle>Select Company</button>
+        <div class="col-sm-4"  ngbDropdownMenu >
+            <button ngbDropdownItem *ngFor="let company of companyNames"  (click)="setCompany(company)">{{company}}</button>
+        </div>
+        <div *ngIf="selectedCompany" class="col-sm-2 bordershot">
+            <p>{{selectedCompany}}<span style="color: green;"> &#10004;</span></p>
+        </div>
+    </div>
+    <div class="row">
+        <!--TIME FRAME-->
+        <div class="row spaceUp">
+            <div class="col-sm-6">
+               <h3 class="floatRight">Select Time Frame </h3>
+            </div>
+            <div class="col-sm-2">
+               <h2 class="col-sm-2" *ngIf="periodSelected" style="color: green;">&#10004;</h2>
+            </div>
+         </div>
+         <!--YEAR OR QUARTER RADIO BUTTONS-->
+         <div class="row ">
+               <div class="col-sm-2">
+                  <input  type="radio" (click)="setPeriod('year')" /> Year
+               </div>             
+            &nbsp;  &nbsp;  &nbsp;
+            <div class="col-sm-2">
+               <input class="" type="radio" (click)="setPeriod('quarter')"/> Quarter
+            </div>  
+         </div>          
+    </div> 
+    <!--CHECK BOXES-->
+     <div class="row spaceUp">
+        <div class="col-md-4 bordershot">
+           <h3 class="col-md-6 blueLine centreThis">Income Statement</h3>
+           <div class="col-md-12 bordershot"*ngFor="let cat of getCategories('income-statement') | keyvalue">
+              <input type="checkbox" (change)="onChange(cat.value, $event.target.checked)" />
+              {{cat.value}}
+           </div>
+        </div>
+        <div class="col-md-4 bordershot">
+           <h3 class="col-md-6 blueLine centreThis">Balance Statement</h3>
+           <div class="col-md-12 bordershot"*ngFor="let cat of getCategories('balance-sheet-statement') | keyvalue">
+              <input type="checkbox" (change)="onChange(cat.value, $event.target.checked)" />
+              {{cat.value}}
+           </div>
+        </div>
+        <div class="col-md-4 bordershot">
+           <h3 class="col-md-8 blueLine centreThis">Cash Flow Statement</h3>
+           <div class="col-md-16 bordershot"*ngFor="let cat of getCategories('cash-flow-statement') | keyvalue">
+              <input type="checkbox" (change)="onChange(cat.value, $event.target.checked)" />
+              {{cat.value}}
+           </div>
+        </div>
+    </div>
+    <!--SUBMIT AND RESET BUTTONS-->
+    <div class="row spaceUp">
+       <div class="col-sm-4"></div>
+          <button class="borderRed col-sm-2 btn btn-success" 
+                  style="float:inline-end;"
+                  (click)="onSubmit()">SUBMIT</button>
+       <button class="col-sm-2 btn btn-danger"
+               (click)="clear()">RESET</button>
+       <button class="col-sm-2 btn btn-dark"
+               (click)="tester()">TEST</button>
+    </div>
+ </div>

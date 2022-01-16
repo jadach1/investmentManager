@@ -1,9 +1,8 @@
 import { Injectable }              from '@angular/core';
-import { Observable, of }          from 'rxjs';
+import { Observable }             from 'rxjs';
 import {MessageService}            from '../Messages/message.service'
 import {Company}                   from '../../../Models/Analyser/Company'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { element } from 'protractor';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -56,7 +55,7 @@ export class AnalysisService {
   }
 
   // Sends Data to DB from 3rd party API
-  postFinancialData(data: string) {
+  postFinancialData(data: string[]) {
     let url = "http://localhost:8080/api/uploadFinancialInfo/";
     return this.http.post(url, data, httpOptions) 
   }
@@ -67,7 +66,7 @@ export class AnalysisService {
     return this.http.get<object>(url);
   }
 
-   // Returns Distinct Categories
+   // Returns Distinct Categories and their statement
    getCategories(): Observable<object> {
     let url = "http://localhost:8080/api/getCategories/";
     return this.http.get<object>(url);

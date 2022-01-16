@@ -14,6 +14,12 @@
     border-color: aqua;
 }
 
+.blueLine{
+    border-bottom: 4px;
+    border-bottom-color:rgb(44, 44, 185);
+    border-bottom-style: solid;
+}
+
 .line{
     padding: 50px;
     border-top: 5px;
@@ -35,3 +41,26 @@
     border-right-color: aqua;
     border-right-style: solid;
 }
+
+.spaceUp{
+    padding-top: 100px;
+}
+
+.padRight{
+    padding-right: 50px;
+}
+
+.floatRight{
+    float: right;
+}
+
+span:hover {
+    font-size: 150%;
+    color: blueviolet;
+}
+
+.enlarge{
+    font-size: 150%;
+}
+
+

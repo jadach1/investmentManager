@@ -1,0 +1,41 @@
+.bordershot{
+    border: 1px;
+    border-style: solid;
+    border-color: red;
+    font-size: 12px;
+}
+
+.borderRed{
+    border: 1px;
+    border-style: solid;
+    border-color: red;
+}
+
+.centreThis{
+    text-align: center;
+}
+
+
+.blueLine{
+    border-bottom: 4px;
+    border-bottom-color:rgb(44, 44, 185);
+    border-bottom-style: solid;
+}
+
+.line{
+    padding: 50px;
+    border-top: 5px;
+    border-top-color: aqua;
+    border-top-style: solid;
+    border-bottom: 5px;
+    border-bottom-color: aqua;
+    border-bottom-style: solid;
+}
+
+
+.spaceUp{
+    padding-top: 50px;
+}
+
+
+

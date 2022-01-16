@@ -19,12 +19,19 @@ require('./app/route/owners-contributions.route.js')(app);
 require('./app/route/misc.route.js')(app);
 require('./app/route/analysis.route.js')(app);
 
+app.get('/page',(req,res) => {
+  res.send("hello world")
+})
+
 // Create a Server
 var server = app.listen(8080, function () {
  
-  let host = server.address().address
+  //let host = server.address().address
+  let host = server.address().host
   let port = server.address().port
  
+  
+
   console.log("App listening at http://%s:%s", host, port);
 })
  

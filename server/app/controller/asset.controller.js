@@ -157,18 +157,6 @@ exports.checkIfExists = (req, res) => {
 		})
 	};
 
-	/* GET ALL ASSET NAMES */
-
-	exports.getAssetNames = (req, res) => {	
-		const owner = req.params.owner;
-		db.sequelize.query('select * from company_names')
-					.then(
-							asset => res.json(asset)
-				  ).catch(
-					  		err => console.log(err)
-				  )
-	};
-
 	exports.insertNewName = (req, res) => {
 		const symbol = req.params.symbok;
 		db.sequelize.query('insert into company_names (symbol) values ('  + symbol + ') ')

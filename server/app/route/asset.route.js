@@ -28,9 +28,6 @@ module.exports = function(capp) {
      //Retrieve all Assets by Owner
      capp.get('/api/allassetsOwner/:owner', CurrentAssets.findAllByOwner);
 
-     // Get list of all Asset ames
-     capp.get('/api/assetSymbols/', CurrentAssets.getAssetNames);
-
      capp.post('/api/insertNewName/:symbol', CurrentAssets.insertNewName)
 
     /*********************** ARCHVIED ASSETS  ***************************/

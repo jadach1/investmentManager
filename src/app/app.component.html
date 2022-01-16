@@ -1,29 +1,43 @@
 
-  <div class="row" style="background-color: aquamarine;">
-    <div class="col-sm-8" style="text-align: center;"> 
-      <button  routerLink="/dashboardFund" type="button" class="circularButton btn-success">Analysis</button>
-      <button  routerLink="/dashboardManagement" type="button" class="circularButton btn-danger">Management</button>
-    </div>    
-  </div>
-  <router-outlet></router-outlet>
-  <footer style="background-color: blue; color: azure; position: relative;">
-    <div class="row">
-      <ul style="color: red;">...to do Manager:
-        <li></li>
-        <li></li>
-        <li></li>
-        
-      </ul>   
+ <div class="container">
+    <div class="row" style="background-color: aquamarine;">
+      <div class="col-sm-6">
+        <div ngbDropdown >
+          <button  ngbDropdownToggle type="button" class="circularButton btn-success" style="float: right;" >Analysis</button>
+          <div ngbDropdownMenu>
+            <button ngbDropdownItem routerLink="/fetchData" class="btn-outline-info">Get New Company Data</button>
+            <button ngbDropdownItem routerLink="/displayData" class="btn-outline-info">Display Company Data</button>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <button  routerLink="/dashboardManagement" type="button" class="circularButton btn-danger">Management</button>
+      </div>  
     </div>
-    <div class="row">
-      <ul style="color:rgb(49, 223, 49)">... to do Analysis:
-        <li>......Create misc library: split netIncome into net Income based on upper case</li>
-        <li>...... Alter Search Critea : Line under buttons 1st row; 3 columns of statements </li>
-        <li>...... </li>
-      </ul>      
-    </div>
-  </footer>
-
+    <router-outlet></router-outlet>
+    <footer class="container giveMeSpace" style="background-color: blue; color: azure; padding: 50px;">
+      <app-messages></app-messages>
+      <hr>
+      <div class="row">
+        <ul style="color: red;">...to do Manager:
+          <li></li>
+          <li></li>
+          <li></li>
+          
+        </ul>   
+      </div>
+      <div class="row">
+        <ul style="color:rgb(49, 223, 49)">... to do Analysis:
+          <li>See if there is any local angular Toast Direction</li>
+          <li>If NOT make custom toast pop up directive</li>
+          <li>Display single, multiple companies in seperate dynamically created tables</li>
+          <li>...... Get % of increases or decreses</li>
+        </ul>      
+      </div>
+    </footer>
+ </div>
+ 
+  
 
 
 

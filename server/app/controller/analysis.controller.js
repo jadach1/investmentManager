@@ -2,6 +2,7 @@ const db = require('../config/db.config.js');
 
 exports.postFinancials = ( req, res ) => {
     const data = req.body;
+    console.log(data)
    // db.sequelize.query()
    data.forEach(element => {
        console.log(element)
@@ -51,7 +52,7 @@ exports.getCompanyNames = (req, res) => {
 }
 
 exports.getCategories = (req, res) => {
-    db.sequelize.query('select DISTINCT category from financials;')
+    db.sequelize.query('select DISTINCT category,statement from financials;')
                  .then(
                      Cat => res.json(Cat) 
                  ).catch(
@@ -72,3 +73,15 @@ exports.getSingleCompanyData = (req, res) => {
                     err => console.log("Failed to get Single Company Data " + err)
                 )
 }
+
+/* GET ALL ASSET NAMES */
+
+exports.getAssetNames = (req, res) => {	
+    const owner = req.params.owner;
+    db.sequelize.query('select * from company_names')
+                .then(
+                        asset => res.json(asset)
+                ).catch(
+                        err => console.log(err)
+                )
+	};
