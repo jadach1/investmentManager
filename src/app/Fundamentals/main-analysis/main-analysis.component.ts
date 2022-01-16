@@ -16,24 +16,6 @@ import {MiscLibrary, ColourGenerator}            from '../../Misc/Functionality/
 
 export class MainAnalysisComponent implements OnInit, OnDestroy {
 
-    // DATA FOR SELECTION
-    companySelected = "?";
-    periodSelected:  string = "";
-    company: CompanyResults;
-
-    companyNames: string[];  // List of companies
-  
-    //Categories reformatted from DB: <"netIncome","Net Income">, user display
-    categoriesIncome:   Map<string,string> = new Map(); 
-    categoriesBalance:  Map<string,string> = new Map(); 
-    categoriesCashFlow: Map<string,string> = new Map(); 
-    
-    //Selected List of Categories from user to GET form DB
-    listOfCategories: string[]; 
-  
-    searchModule: boolean = false; //Hides or Displays the checkbox selections
-    displayModule: boolean = false; //Hide or Displays the results of the search
-
   //DISPLAY VARIABLES
    companyDisplayed: string;
    periodDisplayed: string;  
@@ -54,6 +36,10 @@ export class MainAnalysisComponent implements OnInit, OnDestroy {
       err  => this.messageService.addError("Failed to get Master List")
     )
     console.log(this.masterCompanyList)
+    this.messageService.sendToast("hello world","321",1);
+    this.messageService.sendToast("hello world 2","321",2);
+    this.messageService.sendToast("hello world 3","321",3);
+    this.messageService.sendToast("hello world 4","321",4);
   }
 
 

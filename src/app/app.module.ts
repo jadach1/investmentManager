@@ -3,8 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgbModule }     from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule }         from '@angular/common/http';
 import { ReactiveFormsModule, 
-          FormsModule }             from '@angular/forms';
+         FormsModule }               from '@angular/forms';
 import { AppRoutingModule }          from './app-routing/app-routing.module';
+import {  ToastrModule }             from 'ngx-toastr'
+import {BrowserAnimationsModule}     from '@angular/platform-browser/animations'
+
 
 import { AppComponent }              from './app.component';
 import { MainAnalysisComponent }     from './Fundamentals/main-analysis/main-analysis.component';
@@ -42,7 +45,12 @@ import { CustomDropdownDirective }           from './Directives/custom-dropdown.
     AppRoutingModule, 
     HttpClientModule,  
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    ToastrModule.forRoot({  
+      timeOut: 10000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true, }),
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
