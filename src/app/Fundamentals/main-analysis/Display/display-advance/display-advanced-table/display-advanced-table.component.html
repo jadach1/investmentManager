@@ -1,0 +1,24 @@
+<div >
+  <button (click)="execute()">execute</button>
+  <div style="background-color: springgreen; color: chocolate;">
+
+    <table class="centreThis table enlarge">
+      <col>
+      <colgroup span="2"></colgroup>
+      <colgroup span="2"></colgroup>
+      <tr>
+        <td rowspan="2"></td>
+        <th colspan="5" scope="colgroup" class="centreThis"></th>
+      </tr>
+      <tr>
+        <th scope="col" 
+            class="bottomBorder" 
+            *ngFor="let year of getYears()" >{{year}}</th>
+      </tr>
+      <tr  class="bottomBorder" *ngFor="let company of displayCompanies()">
+        <th class="rightBorder" scope="row" >{{company}}</th>  
+        <td class="rightBorder" *ngFor="let value of fetchCategoryValue(company)"> {{value}}</td>
+      </tr>
+    </table>
+  </div>
+</div>

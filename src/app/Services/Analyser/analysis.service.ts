@@ -68,7 +68,12 @@ export class AnalysisService {
 
    // Returns Distinct Categories and their statement
    getCategories(): Observable<object> {
-    let url = "http://localhost:8080/api/getCategories/";
+    let url = "http://localhost:8080/api/getCategories";
+    return this.http.get<object>(url);
+  }
+
+  getAllYears(): Observable<object>{
+    let url = "http://localhost:8080/api/getAllYears"
     return this.http.get<object>(url);
   }
 

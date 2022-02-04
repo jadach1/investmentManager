@@ -38,10 +38,10 @@ export class MessageService {
         this.toast.error(msg, title);
         break;
       case 3:
-        this.toast.error(msg, title);
+        this.toast.show(msg, title);
         break;
       case 4:
-        this.toast.error(msg, title);
+        this.toast.info(msg, title);
         break;
     }
   }

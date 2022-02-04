@@ -6,13 +6,6 @@
     text-align: center;
 }
 
-
-.colouredTable{
-    font-family: fantasy;
-    color: aqua;
-    border-color: aqua;
-}
-
 .bottomBorder{
     border-bottom: 1px;
     border-bottom-color: aqua;

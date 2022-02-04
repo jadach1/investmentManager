@@ -19,4 +19,6 @@ module.exports = function(app) {
     //GET categories
     app.get('/api/singleCompanyCategories/:categories/:company/:period', analysis.getSingleCompanyData)
 
+    //GET All Years regarding Financial Statements
+    app.get('/api/getAllYears', analysis.getAllYears)
 }

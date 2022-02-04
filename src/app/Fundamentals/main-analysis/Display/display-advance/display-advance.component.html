@@ -1,0 +1,115 @@
+<div style="margin-top: 50px;"> 
+    <div class="nav" style="margin-left: 50px;">
+
+        <!--DROP DOWN OF COMPANIES IN DB-->
+        <div ngbDropdown>
+            <button class="btn-outline-info" ngbDropdownToggle>Companies Available</button>
+            <div ngbDropdownMenu >
+                <button ngbDropdownItem
+                    *ngFor="let company of companyMasterList">
+                        {{company.id}}.  {{company.name}}
+                        <div  style="float: right; text-align: center;">
+                            <!--CHECK BUTTON-->
+                            <span role="button" 
+                                [ngStyle]="{'background-color': getColour(company.name)}" 
+                                (click)="addCompany(company)"> 
+                            &#10004;</span>
+                        </div>
+                </button> 
+            </div>
+        </div>
+
+        <!--DROPDOWN OF COMPANIES SELECTED-->
+        <div ngbDropdown>
+            <button ngbDropdownToggle 
+            class="btn-outline-danger"
+            style="color: black;">My Companies 
+             </button>   
+                <div ngbDropdownMenu>
+                    <button ngbDropdownItem *ngFor="let cmp of userSelectedList">
+                    {{cmp.id}}.  {{cmp.name}}
+                    <div  style="float: right; text-align: center;">
+                        <!--DELETE BUTTON-->
+                        <span role="button" 
+                            [ngStyle]="{'background-color': getColour(cmp.name)}" 
+                            (click)="dropCompany(cmp.id)"> 
+                            &#10060;</span>
+                    </div>
+                    </button>
+                </div>    
+        </div>
+
+        &nbsp; &nbsp; &nbsp;
+
+        <!-- DROPDOWN OF CATEGORIES AVAILABLE-->
+        <div ngbDropdown>
+            <button  ngbDropdownToggle class="btn-outline-info">Categories Available</button>
+            <div ngbDropdownMenu>
+                <button ngbDropdownItem 
+                        *ngFor="let category of categoryMasterList; let i = index"
+                        (click)="addCategory(category)">{{i}}.  {{category}}</button>
+                <button ngbDropdownItem (click)="selectAllCategories()">Select All</button>
+            </div>
+        </div>
+
+        <!-- DROPDOWN OF CATEGORIES ENLISTED-->
+        <div ngbDropdown>
+            <button ngbDropdownToggle class="btn-outline-danger">Categories Enlisted</button>
+            <div ngbDropdownMenu >
+                <button ngbDropdownItem 
+                        *ngFor="let cat of categoriesSelected"
+                        (click)="dropCategory(cat)">{{cat}}</button>
+                <button ngbDropdownItem (click)="removeAllCategories()">Remove All</button>
+            </div>
+        </div>
+    </div>
+
+    <!--DISPLAY TABLES ONCE COMPANIES HAVE BEEN SELECTED-->
+    <div *ngIf="userSelected()" style="margin-top: 50px;">
+        <div  
+            *ngFor="let cat of categoriesSelected"
+            [ngStyle]="{'border-color': getColour(cat)}"
+            style="border-style: solid; border-width: 1px; margin-bottom: 50px; "
+            >
+            <!--HEADER -->
+            <h2 [ngStyle]="{'color': getColour(cat)}" style="border:1px; border-style: solid; border-color: red;">{{cat}}
+                 <!--DOWNWARD ARROW SIGN-->
+                 <span 
+                 role="button" 
+                 style="margin-left: 50px; color: black; background-color: aliceblue;"
+                 (click)="sortMasterListDesc()"> 
+                  &#8595;</span> 
+                <!--UPWARD ARROW SIGN-->
+                 <span 
+                 role="button" 
+                 style="color: black; background-color: aliceblue;"
+                 (click)="sortMasterListAsc()"> 
+                  &#8593;</span>
+                <!--DOLLAR SIGN-->
+                <span 
+                role="button" 
+                style="margin-left: 50px; color: green; background-color: aliceblue;"
+                (click)="dropCategory(cat)"> 
+                 &#36;</span>
+                <!--pERCENT SIGN-->
+                <span 
+                        role="button" 
+                        style="color: black; background-color: aliceblue;"
+                        (click)="dropCategory(cat)"> 
+                &#37;</span>
+                <!--CLOSE BUTTON-->
+                <span 
+                        role="button" 
+                        style="float: right;"
+                        (click)="dropCategory(cat)"> 
+                &#10060;</span></h2>
+            <!--TABLE BELOW-->
+            <app-display-advanced-table 
+                        [categorySelected]  ="cat" 
+                        [categoriesSelected]="categoriesSelected"
+                        [listOfCompanies]   ="userSelectedList"
+                        [yearList] = "yearList">
+            </app-display-advanced-table>
+        </div>
+    </div>
+</div>

@@ -85,3 +85,13 @@ exports.getAssetNames = (req, res) => {
                         err => console.log(err)
                 )
 	};
+
+    /*RETURNS ALL THE YEARS FOR FINANCIAL STATEMENTS */
+exports.getAllYears = (req, res) => {
+    db.sequelize.query('select distinct split_part(symbol_date_value,\',\',3) as year from financials order by year DESC;')
+                .then(
+                    years => res.json(years)
+                ).catch(
+                    err => res.json(err)
+                )
+}

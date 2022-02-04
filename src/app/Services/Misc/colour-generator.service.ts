@@ -104,7 +104,7 @@ export class ColourGeneratorService {
 
     generateByLetter(symbol: string): String{
       let str: String;
-      str = this.colorMap.get(symbol.substr(0,1));
+      str = this.colorMap.get(symbol.toUpperCase().substring(0,1));
       return str;
     }
 }

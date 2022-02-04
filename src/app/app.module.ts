@@ -20,8 +20,9 @@ import { TransactionsComponent }     from './Management/transactions/transaction
 import { MessagesComponent }         from './Misc/messages/messages.component';
 import { AnalysisSearchCriteriaComponent }   from './Fundamentals/main-analysis/SearchOptions/analysis-search-criteria/analysis-search-criteria.component';
 import { DisplaySingleCompanyComponent }     from './Fundamentals/main-analysis/Display/display-single-company/display-single-company.component';
-import { DisplayMultipleCompaniesComponent } from './Fundamentals/main-analysis/Display/display-multiple-companies/display-multiple-companies.component';
 import { CustomDropdownDirective }           from './Directives/custom-dropdown.directive';
+import { DisplayAdvanceComponent }           from './Fundamentals/main-analysis/Display/display-advance/display-advance.component';
+import { DisplayAdvancedTableComponent } from './Fundamentals/main-analysis/Display/display-advance/display-advanced-table/display-advanced-table.component';
 
 @NgModule({
   declarations: [
@@ -36,8 +37,9 @@ import { CustomDropdownDirective }           from './Directives/custom-dropdown.
     MessagesComponent,
     AnalysisSearchCriteriaComponent,
     DisplaySingleCompanyComponent,
-    DisplayMultipleCompaniesComponent,
     CustomDropdownDirective,
+    DisplayAdvanceComponent,
+    DisplayAdvancedTableComponent,
   ],
   imports: [
     BrowserModule, 

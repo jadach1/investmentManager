@@ -158,7 +158,9 @@ export class AnalysisMidwayService  {
           this.company.id = this.idCounter;
     }))
     .subscribe(
-                res => this.companyMasterList.push(this.company),
+                res => {this.companyMasterList.push(this.company),
+                        this.msgService.sendToast("Successfully added " + this.company.name,"Search Criteria", 1)
+                      },
                 err => {this.msgService.addError("Error getting search results: "),
                         this.msgService.addError(err)},
                 ()  => { 
@@ -196,10 +198,14 @@ export class AnalysisMidwayService  {
       })      
   }
 
-        //Whatever Components are subscribed to the  sharedMasterList :Subject will be refreshed
-        refreshMasterList(){
-          this.sharedMasterList.next(this.companyMasterList)
-        }
+    //Whatever Components are subscribed to the  sharedMasterList :Subject will be refreshed
+  public  refreshMasterList(){
+      this.sharedMasterList.next(this.companyMasterList)
+    }
+  
+  public getMasterList(): CompanyResults[]{
+      return this.companyMasterList;
+  }
   /*/************************   DISPLAY COMPANY INFORMATION    *//************************/
   public getCategories(): Observable<{category: string,statement: string}> {
       return this.analService.getCategories()
@@ -208,11 +214,24 @@ export class AnalysisMidwayService  {
                              }))
   }
 
+  public getYears(): Observable<number[]> {
+     return this.analService.getAllYears()
+                          .pipe(map( response => {
+                             let tempArray: number[] = [];
+                            for(let i = 0; i < response[0].length; i++){
+                              tempArray.push(response[0][i].year)
+                            }
+                             return tempArray;
+                          }));
+  }
+
   /*RETURN A MAP OF TABLE CATEGORIES AND ITS CORRESPONDING STATEMENT */
   public getTableMap(): Map<string,string[]>{
     return this.tableMap;
   }
   
    /******************** OTHER FUNCTIONALITY********************/
+
+
  
 }

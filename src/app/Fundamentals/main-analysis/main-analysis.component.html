@@ -2,31 +2,9 @@
    <h1 class="centreThis">DISPLAY & COMPARE COMPANY DATA</h1>
    <nav class="borderShot">
       <button routerLink="SearchCriteria" class="btn btn-warning nav-item">Search Criteria</button>
-      <button class="btn btn-info nav-item">Display Basic</button>
-      <button class="btn btn-success nav-item">Display Advanced</button>
-         <!--LIST OF SAVED COMPANIES-->
-      <div *ngIf="isListEmpty()" class="nav-item">
-         <div ngbDropdown>
-            <button class="btn btn-outline-light" ngbDropdownToggle>Your Companies</button>
-            <div ngbDropdownMenu>
-               <button ngbDropdownItem *ngFor="let company of masterCompanyList">{{company.name}}
-                  <div class="col-sm-4" style="float: right; text-align: center;">
-                     <!--CHECK BUTTON-->
-                     <span role="button" 
-                           [ngStyle]="{'background-color': getColour(company.name)}" 
-                           (click)="displayMe(company)"> 
-                        &#10004;</span>
-                     <!--DELETE BUTTON-->
-                     <span role="button" 
-                           [ngStyle]="{'background-color': getColour(company.name)}" 
-                           (click)="deleteMe(company.id)"> 
-                           &#10060;</span>
-                  </div>
-               </button>
-            </div>
-         </div>
-       </div>
+      <button routerLink="displaySingle" class="btn btn-info nav-item">Display Basic</button>
+      <button routerLink="displayAdvanced" class="btn btn-success nav-item">Display Advanced</button>
        <button class="nav-item">Test</button>
    </nav>
-   <router-outlet></router-outlet> 
+   <router-outlet ></router-outlet> 
 </div>
