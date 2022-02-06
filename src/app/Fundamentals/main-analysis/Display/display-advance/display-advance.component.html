@@ -16,6 +16,9 @@
                             &#10004;</span>
                         </div>
                 </button> 
+                <button ngbDropdownItem (click)="addAllCompanies()">
+                    Select All
+                </button>
             </div>
         </div>
 
@@ -35,6 +38,9 @@
                             (click)="dropCompany(cmp.id)"> 
                             &#10060;</span>
                     </div>
+                    </button>
+                    <button ngbDropdownItem (click)="dropAllCompanies()">
+                        Deslect All
                     </button>
                 </div>    
         </div>
@@ -73,42 +79,44 @@
             >
             <!--HEADER -->
             <h2 [ngStyle]="{'color': getColour(cat)}" style="border:1px; border-style: solid; border-color: red;">{{cat}}
-                 <!--DOWNWARD ARROW SIGN-->
+                 
+                <!--DOWNWARD ARROW SIGN-->
                  <span 
                  role="button" 
                  style="margin-left: 50px; color: black; background-color: aliceblue;"
-                 (click)="sortMasterListDesc()"> 
-                  &#8595;</span> 
-                <!--UPWARD ARROW SIGN-->
-                 <span 
-                 role="button" 
-                 style="color: black; background-color: aliceblue;"
-                 (click)="sortMasterListAsc()"> 
-                  &#8593;</span>
+                 (click)="setDirection(true)"> 
+                  &#8595; | &#8593;</span> 
+
+
                 <!--DOLLAR SIGN-->
                 <span 
                 role="button" 
                 style="margin-left: 50px; color: green; background-color: aliceblue;"
-                (click)="dropCategory(cat)"> 
+                (click)="displayAs(true)"> 
                  &#36;</span>
+
                 <!--pERCENT SIGN-->
                 <span 
                         role="button" 
                         style="color: black; background-color: aliceblue;"
-                        (click)="dropCategory(cat)"> 
+                        (click)="displayAs(false)"> 
                 &#37;</span>
+
                 <!--CLOSE BUTTON-->
                 <span 
                         role="button" 
                         style="float: right;"
                         (click)="dropCategory(cat)"> 
                 &#10060;</span></h2>
+
             <!--TABLE BELOW-->
             <app-display-advanced-table 
                         [categorySelected]  ="cat" 
                         [categoriesSelected]="categoriesSelected"
                         [listOfCompanies]   ="userSelectedList"
-                        [yearList] = "yearList">
+                        [yearList] = "yearList"
+                        [displayedAs] = "viewAs"
+                        [direction]="direction">      
             </app-display-advanced-table>
         </div>
     </div>
