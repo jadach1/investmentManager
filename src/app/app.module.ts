@@ -7,6 +7,7 @@ import { ReactiveFormsModule,
 import { AppRoutingModule }          from './app-routing/app-routing.module';
 import {  ToastrModule }             from 'ngx-toastr'
 import {BrowserAnimationsModule}     from '@angular/platform-browser/animations'
+import {MatSliderModule} from '@angular/material/slider'
 
 
 import { AppComponent }              from './app.component';
@@ -49,10 +50,11 @@ import { DisplayAdvancedTableComponent } from './Fundamentals/main-analysis/Disp
     ReactiveFormsModule,
     FormsModule,
     ToastrModule.forRoot({  
-      timeOut: 10000,
+      timeOut: 2000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true, }),
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatSliderModule
   ],
   providers: [],
   bootstrap: [AppComponent]

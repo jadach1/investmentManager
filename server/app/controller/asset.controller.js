@@ -158,10 +158,10 @@ exports.checkIfExists = (req, res) => {
 	};
 
 	exports.insertNewName = (req, res) => {
-		const symbol = req.params.symbok;
-		db.sequelize.query('insert into company_names (symbol) values ('  + symbol + ') ')
+		const symbol = req.params.symbol;
+		db.sequelize.query('insert into company_names (symbol) values (\''  + symbol + '\') ')
 					.then( asset => 
-								 res.status(200).json( {msg: "successfully added company: " + symbol + " :: " + asset})
+								 res.status(200).json( {msg: "successfully added company: " + symbol })
 							) 
 					.catch( err  => res.status(500).json(err))
 	};

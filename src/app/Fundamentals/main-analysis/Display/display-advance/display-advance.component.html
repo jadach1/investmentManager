@@ -84,7 +84,7 @@
                  <span 
                  role="button" 
                  style="margin-left: 50px; color: black; background-color: aliceblue;"
-                 (click)="setDirection(true)"> 
+                 (click)="setDirection()"> 
                   &#8595; | &#8593;</span> 
 
 
@@ -109,6 +109,20 @@
                         (click)="dropCategory(cat)"> 
                 &#10060;</span></h2>
 
+                <!--DISPLAY THE YEAR RANGE-->
+            <div class="row">
+                <div class="col-sm-2" style="margin-left: 50px;">
+                    {{yearRange.minYear}}
+                </div>
+                <mat-slider class="col-sm-4 slider"
+                            [max]="yearRange.maxYear" 
+                            [min]="yearRange.minYear" 
+                            [thumbLabel]="true"
+                            [(ngModel)]="yearRange.value">
+                </mat-slider>
+                {{yearRange.maxYear}}
+           
+            </div>
             <!--TABLE BELOW-->
             <app-display-advanced-table 
                         [categorySelected]  ="cat" 
@@ -116,7 +130,8 @@
                         [listOfCompanies]   ="userSelectedList"
                         [yearList] = "yearList"
                         [displayedAs] = "viewAs"
-                        [direction]="direction">      
+                        [direction]="direction"
+                        [yearRange]="yearRange">      
             </app-display-advanced-table>
         </div>
     </div>

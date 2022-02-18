@@ -35,16 +35,13 @@ export class MainAnalysisComponent implements OnInit, OnDestroy {
       list => this.masterCompanyList = list,
       err  => this.messageService.addError("Failed to get Master List")
     )
-    this.messageService.sendToast("hello world","321",1);
-    this.messageService.sendToast("hello world 2","321",2);
-    this.messageService.sendToast("hello world 3","321",3);
-    this.messageService.sendToast("hello world 4","321",4);
   }
 
 
   ngOnDestroy(): void {
       //Prevent Memory Leaks by Unsubscribing
       this.masterCompanySub.unsubscribe();
+      console.log("destroy")
   }
 
 
@@ -62,6 +59,10 @@ export class MainAnalysisComponent implements OnInit, OnDestroy {
 
   public isListEmpty() : boolean {
     return this.masterCompanyList.length != 0 ? true : false;
+  }
+
+  public checkMasterList() {
+    console.log(this.masterCompanyList)
   }
  
 }

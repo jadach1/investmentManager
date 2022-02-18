@@ -72,7 +72,7 @@ export class DataManagerComponent implements OnInit {
     if (this.symbol != ""){
         this.analService.newAssetName(this.symbol)
                       .subscribe(
-                                    res => this.msgService.add(res.toString()),
+                                    res => console.log(res),
                                     err => this.msgService.add(err.toString())
                                 )
         }  

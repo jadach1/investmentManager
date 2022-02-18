@@ -6,6 +6,14 @@ import {AnalysisService} from '../../../../Services/Analyser/analysis.service'
 import {MessageService} from '../../../../Services/Messages/message.service'
 import {ColourGeneratorService} from '../../../../Services/Misc/colour-generator.service'
 
+//Used to display a range of years for the user, cooperates with yearList
+interface yearSlider{
+  minYear: number;
+  maxYear: number;
+  thumbnail: boolean;
+  value: number;
+}
+
 @Component({
   selector: 'app-display-advance',
   templateUrl: './display-advance.component.html',
@@ -19,8 +27,8 @@ categoryMasterList: string[] = [];
 categoriesSelected: string[] = [];
 direction: boolean = true //For either in Descending or Ascending order, true = descending
 viewAs: boolean = true; //For displaying either in $ or %
-yearList: number[] = [];  // Used to display all the years available in DB for company financials
-
+yearList:     number[] = [];  // Used to display all the years available in DB for company financials
+yearRange: yearSlider;
 
   constructor(private analMidServe: AnalysisMidwayService,
               private analService: AnalysisService,
@@ -28,40 +36,37 @@ yearList: number[] = [];  // Used to display all the years available in DB for c
               public colourGen: ColourGeneratorService) { }
 
   ngOnInit(): void {
+
     this.companyMasterList = this.analMidServe.getMasterList();
+
     this.analMidServe.getCategories()
                       .pipe( map( (categories: Object) => {
-                        let temp: string[] = new Array();
-                        for( const [ke, value] of Object.entries(categories)) {
-                            temp.push(value.category);
-                        }
-                        return temp;
+                          let temp: string[] = new Array();
+
+                          for( const [ke, value] of Object.entries(categories)) {
+                              temp.push(value.category);
+                          }
+                          
+                          return temp;
                       }))
                      .subscribe(
-                       CAT => {this.categoryMasterList = CAT},
-                       err => this.msgServe.sendToast("Error Getting Categories","Display Advanced ", 2),
+                        CAT => {this.categoryMasterList = CAT},
+                        err => this.msgServe.sendToast("Error Getting Categories","Display Advanced ", 2),
                      )
+
      this.analMidServe.getYears()
                       .subscribe( 
                                 res => this.yearList = res, 
-                                err => this.msgServe.sendToast("Failure to get years","year down",2)
+                                err => this.msgServe.sendToast("Failure to get years","year down",2),
+                                ()  => this.createYearRange()
                                 )
   }
 
-  public getColour(str: string): String {
-      return this.colourGen.generateByLetter(str);
-  }
 
-  public userSelected(): boolean {
-    return this.userSelectedList.length > 0 ? true: false;
-  }
 
-  public viewIt() {
-    console.log(this.companyMasterList)
-    console.log(this.userSelectedList)
-  }
-
-  /********* ADDING OR REMOVING COMPANIES FROM LIST **********/
+  /***************************************************************************\
+      COMPANY MASTER LIST MANIPULATION
+  \****************************************************************************/
 
   //Iterate through all members of the userSelectedList to see if company we are addomg already exists
   public addCompany(company: CompanyResults) {
@@ -118,7 +123,9 @@ yearList: number[] = [];  // Used to display all the years available in DB for c
       this.msgServe.sendToast("Removed All Companies" ,"Remove Companies",3);
   }
 
-  /********* CATEGORY LIST *********/
+  /***************************************************************************\
+      CATEGORIES LIST MANIPULATION 
+  \****************************************************************************/
   public addCategory(category: string) {
     this.categoriesSelected.push(category)
     this.msgServe.sendToast("Successfully Added New Category to View: " + category,"Category Add",1)
@@ -145,14 +152,20 @@ yearList: number[] = [];  // Used to display all the years available in DB for c
   }
 
   public removeAllCategories() {
+
     if(this.categoriesSelected.length > 0) {
+
        this.categoriesSelected.forEach(category => {
       this.categoryMasterList.push(category)
-    })
-    this.msgServe.sendToast("Removed All Categories","Remove Categories",3);
-    this.categoriesSelected.splice(0)
+      })
+
+      this.msgServe.sendToast("Removed All Categories","Remove Categories",3);
+      this.categoriesSelected.splice(0)
+
     } else {
+
       this.msgServe.sendToast("Nothing to Remove","Remove Categories",4)
+
     }
    
   }
@@ -160,20 +173,16 @@ yearList: number[] = [];  // Used to display all the years available in DB for c
   /***************************************************************************\
       SORTING DATA 
   \****************************************************************************/
-  // Makes sure this list is sorted by Year - Ascending
+
+  //Sets the direction so we know hwo to calculate the sums of % increases
+  public setDirection() {
+    this.direction = !this.direction;
+    this.sortMasterList();
+  }
+
+  // Makes sure this list is sorted by Year - Ascending or Descending
   public sortMasterList() {
-    // this.userSelectedList.forEach( company => {
-    //   for(let i = 0; i < company.results.length; i++){
-    //     for(let k = i + 1; k < company.results.length; k++){
-    //       if(company.results[i].year > company.results[k].year){
-    //         let tempCompany    = new Company();
-    //         tempCompany        = company.results[i];
-    //         company.results[i] = company.results[k];
-    //         company.results[k] = tempCompany;
-    //       }
-    //     }
-    //   }
-    // })
+    //Flips the companies around in reverse
     this.userSelectedList.forEach( company => {
       let tempCompany = new Array<Company>();
       for(let i = 0;i < company.results.length;i++){
@@ -191,32 +200,46 @@ yearList: number[] = [];  // Used to display all the years available in DB for c
     this.yearList = tempYears; // Reset the yearList array
   }
 
-  public sortMasterListDesc() {
-    this.userSelectedList.forEach( company => {
-      for(let i = 0; i < company.results.length; i++){
-        for(let k = i + 1; k < company.results.length; k++){
-          if(company.results[i].year < company.results[k].year){
-            let tempCompany    = new Company();
-            tempCompany        = company.results[i];
-            company.results[i] = company.results[k];
-            company.results[k] = tempCompany;
-          }
-        }
-      }
-    })
+  public test(year: number) {
+    console.log(year)
+    console.log( this.yearList.indexOf(1995))
+    console.log(this.yearList)
+
   }
+
 
   /***************************************************************************\
       MISC FUNCTIONS
   \****************************************************************************/
 
+  //For displaying either in $ or %
   public displayAs(flag: boolean) {
     this.viewAs = flag;
   }
 
-  public setDirection(flag: boolean) {
-    this.direction = flag;
-    this.sortMasterList();
-    // flag ? this.sortMasterListDesc():this.sortMasterListAsc();
+  public getColour(str: string): String {
+    return this.colourGen.generateByLetter(str);
   }
+
+  public userSelected(): boolean {
+    return this.userSelectedList.length > 0 ? true: false;
+  }
+
+  //Initialise the YearRange Object
+  private createYearRange() {
+
+    if(this.yearList.length > 0){
+
+      this.yearRange = {
+        minYear:   this.yearList[this.yearList.length - 1],
+        maxYear:   this.yearList[0],
+        thumbnail: true,
+        value:     this.yearList[this.yearList.length - 1]
+      }
+      this.yearList = this.yearList;
+    }
+  }
+
+ 
+  
 }

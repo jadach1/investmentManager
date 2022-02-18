@@ -17,45 +17,31 @@ export class DisplayAdvancedTableComponent implements OnInit {
   @Input() direction: boolean = true;// true for Descending
 
   @Input() yearList: number[] = [];
-      yearMin: number;
-      yearMax: number;
-  
-  // hide = new EventEmitter<boolean>();
+  @Input() yearRange: {
+        minYear: number;
+        maxYear: number;
+        thumbnail: boolean;
+        value: number;
+  };
 
   constructor() { }
 
   ngOnInit(): void {
-    console.log("Inside")
-    console.log(this.displayedAs)
+
   }
 
-  // public hideTable(){
-  //   this.hide.emit(true);
-  // }
-
-  //Checks to see if a Category exists
-  // public isCategoryViewable(): boolean {
-  //   let exists: boolean = false;
-  //   try {
-  //     this.categoriesSelected.forEach( category => {
-  //       if (category === this.categorySelected) {
-  //         throw "category"
-  //       }
-  //     })
-  //   } catch (category) {
-  //     if(category != "category") {
-  //       throw category;
-  //     }
-  //     console.log("caught " + category)
-  //     return true;
-  //   }
-  //   return exists;
-  // }
   /***********************= FUNCTIONS TO DISPLAY DATA IN TABLES =***********************/
 
-  /*RETURNS ALL THE YEARS STORED IN THE COMPANY */
+  /*RETURNS THE YEARS IN REFERENCE TO THE RANGE */
   public getYears(): Array<number> {
-    return this.yearList;
+    let newArray: number[] = [];
+    this.yearList.forEach(year => {
+      if(year >= this.yearRange.value){
+          newArray.push(year);
+      }
+    })
+
+    return newArray;
   }
 
   /*RETURNS ALL THE COMPANIES IN OUR LIST FOR DISPLAY */
@@ -83,15 +69,18 @@ export class DisplayAdvancedTableComponent implements OnInit {
              for(let i = 0; i < this.yearList.length; i++){
 
               //Check to see which year matches with the latest results
-              if(this.yearList[i] == company.results[0].year) {
-                 console.log("found matching year " + this.yearList[i]);
+                if(this.yearList[i] == company.results[0].year) { 
+                //  console.log("found matching year " + this.yearList[i]);
                  break;
                } else { tempArray.push(0)}
              }
-
               //Get each value based on desired category
               company.results.forEach(period => {     
-                      tempArray.push(period.data.get(this.categorySelected));                
+                      if( period.year >= this.yearRange.value ){
+                        tempArray.push(period.data.get(this.categorySelected));  
+                      } else {
+                        throw "out of range"
+                      }             
                   })
 
               // End the loop here, because we have the company we want
@@ -100,11 +89,19 @@ export class DisplayAdvancedTableComponent implements OnInit {
             }  //If   
           })// forEach
     } catch (array) {
-      if (array != 'array') throw array;
-      //Check to see if we want to display Data in $ or %
-      if(!this.displayedAs){
-        tempArray = this.convertToPercent(tempArray);
-      }
+        switch (array) {
+          case "array":
+            if(!this.displayedAs) {
+              tempArray = this.convertToPercent(tempArray);
+            }
+            break;
+          case "out of range":
+            console.log("exit, out of range date")
+            break;
+          default:
+            break;
+
+        }
     }
       return tempArray;
   }
@@ -125,13 +122,15 @@ export class DisplayAdvancedTableComponent implements OnInit {
       tempArray.push(0);
     } else {
       //Ascending Order
-      //Last year doesn't have anything to compare to, so is null.
+      //First year doesn't have anything to compare to, so is null.
       tempArray.push(0);
       for(let i =  0;i < baseData.length - 1;i++){
         if(baseData[i] != 0 ){
           tempArray.push( (baseData[i + 1] - baseData[i] ) / baseData[i] * 100);
         }
       }
+      console.log("descending")
+      console.log(tempArray)
       
     }
     
