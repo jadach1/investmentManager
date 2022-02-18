@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map } from 'rxjs/operators';
 import {CompanyResults, Company} from '../../../../../Models/Analyser/Company'
 import {AnalysisMidwayService} from '../../../../Services/Analyser/analysis-midway.service'
@@ -19,15 +19,15 @@ interface yearSlider{
   templateUrl: './display-advance.component.html',
   styleUrls: ['./display-advance.component.css']
 })
-export class DisplayAdvanceComponent implements OnInit {
+export class DisplayAdvanceComponent implements OnInit, OnDestroy {
 
 companyMasterList: CompanyResults[] = [];
 userSelectedList: CompanyResults[] = [];
 categoryMasterList: string[] = [];
 categoriesSelected: string[] = [];
-direction: boolean = true //For either in Descending or Ascending order, true = descending
-viewAs: boolean = true; //For displaying either in $ or %
-yearList:     number[] = [];  // Used to display all the years available in DB for company financials
+direction: boolean  = true //For either in Descending or Ascending order, true = descending
+viewAs: boolean     = true; //For displaying either in $ or %
+yearList:  number[] = [];  // Used to display all the years available in DB for company financials
 yearRange: yearSlider;
 
   constructor(private analMidServe: AnalysisMidwayService,
@@ -38,6 +38,8 @@ yearRange: yearSlider;
   ngOnInit(): void {
 
     this.companyMasterList = this.analMidServe.getMasterList();
+    //If we exit out of this compoenent it will delete the userSelectedList, so this is a failsafe to retrieve it
+    this.userSelectedList = this.analMidServe.getUserSelectedList();
 
     this.analMidServe.getCategories()
                       .pipe( map( (categories: Object) => {
@@ -62,6 +64,11 @@ yearRange: yearSlider;
                                 )
   }
 
+  ngOnDestroy(): void {
+    console.log("destory 2") 
+       //we need to save the userSelectedList or all companies will be lost
+      this.analMidServe.saveUserSelectedList(this.userSelectedList);
+  }
 
 
   /***************************************************************************\
@@ -106,7 +113,7 @@ yearRange: yearSlider;
 
 
   public dropCompany(id: number){
-    this.companyMasterList.forEach( company => {
+    this.userSelectedList.forEach( company => {
       if(company.id === id) {
         this.userSelectedList.splice(this.userSelectedList.indexOf(company),1);
         this.msgServe.sendToast("Removed " + company.name,"Remove Company",2);

@@ -26,6 +26,7 @@ export class AnalysisMidwayService  {
    companyMasterList: CompanyResults[] = [];
   // Similar to Obervable; to send companyMasterList across components
    sharedMasterList  = new Subject<CompanyResults[]>();
+   sharedUserSelectedMasterList: CompanyResults[] = [];
   
 
   constructor(private analService: AnalysisService, public msgService: MessageService) {
@@ -171,6 +172,7 @@ export class AnalysisMidwayService  {
     ) 
   }
 
+  //Returns all options of Categories for Search Criteria component
   private createList(): string[] {
     let tempList: string[] = [];
     this.tableIncome.forEach(category => {
@@ -185,7 +187,9 @@ export class AnalysisMidwayService  {
     return tempList;
   }
 
-  /*************** MANAGE companyMasterList ***************/
+/****************************** 
+  MANAGE companyMasterList 
+  ******************************/
   
   //Deletes a Company from the Master List based on ID, then refreshes list
   public deleteFromMasterList(id: number){
@@ -205,6 +209,15 @@ export class AnalysisMidwayService  {
   
   public getMasterList(): CompanyResults[]{
       return this.companyMasterList;
+  }
+
+  //Saves the user selected MasterList from the display advanced component
+  public saveUserSelectedList(list: CompanyResults[]){
+    this.sharedUserSelectedMasterList = list;
+  }
+
+  public getUserSelectedList(): CompanyResults[] {
+    return this.sharedUserSelectedMasterList;
   }
   /*/************************   DISPLAY COMPANY INFORMATION    *//************************/
   public getCategories(): Observable<{category: string,statement: string}> {

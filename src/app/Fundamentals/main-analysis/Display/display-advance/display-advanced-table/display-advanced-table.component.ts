@@ -90,6 +90,7 @@ export class DisplayAdvancedTableComponent implements OnInit {
           })// forEach
     } catch (array) {
         switch (array) {
+          //Check if we want displayed as %
           case "array":
             if(!this.displayedAs) {
               tempArray = this.convertToPercent(tempArray);
@@ -114,8 +115,12 @@ export class DisplayAdvancedTableComponent implements OnInit {
     if(this.direction){
       //Descending Order
       for(let i =  0;i < baseData.length - 1;i++){
+        //If the value is 0 most likely, the numbers for that particular year haven't beem acquired, forward the 0
         if(baseData[i] != 0 ){
-          tempArray.push( (baseData[i] - baseData[i+1] ) / baseData[i + 1] * 100);
+          let value: number = (baseData[i] - baseData[i+1] ) / baseData[i + 1] * 100;
+          tempArray.push(+value.toFixed(2));
+        } else {
+          tempArray.push(0)
         }
       }
       //Last year doesn't have anything to compare to, so is null.
@@ -126,7 +131,10 @@ export class DisplayAdvancedTableComponent implements OnInit {
       tempArray.push(0);
       for(let i =  0;i < baseData.length - 1;i++){
         if(baseData[i] != 0 ){
-          tempArray.push( (baseData[i + 1] - baseData[i] ) / baseData[i] * 100);
+          //Calculate % then round it to 2 decimal places
+          let value: number = (baseData[i + 1] - baseData[i] ) / baseData[i] * 100;
+          console.log(+value.toFixed(2))
+          tempArray.push(+value.toFixed(2));
         }
       }
       console.log("descending")
