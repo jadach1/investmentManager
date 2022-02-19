@@ -102,6 +102,13 @@
                         (click)="displayAs(false)"> 
                 &#37;</span>
 
+                <!--THOUSANDS OR MILLIONS SIGN-->
+                <span 
+                role="button" 
+                style="margin-left: 50px; color: green; background-color: aliceblue;"
+                (click)="toBeDisplayedIn()"> 
+                 {{displayIn}}</span>
+
                 <!--CLOSE BUTTON-->
                 <span 
                         role="button" 
@@ -125,13 +132,14 @@
             </div>
             <!--TABLE BELOW-->
             <app-display-advanced-table 
-                        [categorySelected]  ="cat" 
-                        [categoriesSelected]="categoriesSelected"
-                        [listOfCompanies]   ="userSelectedList"
-                        [yearList] = "yearList"
-                        [displayedAs] = "viewAs"
+                        [categorySelected]  = "cat" 
+                        [categoriesSelected]= "categoriesSelected"
+                        [listOfCompanies]   = "userSelectedList"
+                        [yearList]          = "yearList"
+                        [displayedAs]       = "viewAs"
                         [direction]="direction"
-                        [yearRange]="yearRange">      
+                        [yearRange]="yearRange"
+                        [displayIn]="displayIn">      
             </app-display-advanced-table>
         </div>
     </div>

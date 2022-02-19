@@ -17,7 +17,9 @@
       </tr>
       <tr  class="bottomBorder" *ngFor="let company of displayCompanies()">
         <th class="rightBorder" scope="row" >{{company}}</th>  
-        <td class="rightBorder" *ngFor="let value of fetchCategoryValue(company)"> {{value}}</td>
+        <td class="rightBorder" *ngFor="let value of fetchCategoryValue(company)"> {{value}} 
+          <span *ngIf="!displayedAs">&#37;</span>
+        </td>
       </tr>
     </table>
   </div>

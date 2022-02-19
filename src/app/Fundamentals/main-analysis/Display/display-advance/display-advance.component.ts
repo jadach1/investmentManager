@@ -27,6 +27,7 @@ categoryMasterList: string[] = [];
 categoriesSelected: string[] = [];
 direction: boolean  = true //For either in Descending or Ascending order, true = descending
 viewAs: boolean     = true; //For displaying either in $ or %
+displayIn: string   = "default"; //For displaying in its default form or in thousands or millions.
 yearList:  number[] = [];  // Used to display all the years available in DB for company financials
 yearRange: yearSlider;
 
@@ -65,7 +66,6 @@ yearRange: yearSlider;
   }
 
   ngOnDestroy(): void {
-    console.log("destory 2") 
        //we need to save the userSelectedList or all companies will be lost
       this.analMidServe.saveUserSelectedList(this.userSelectedList);
   }
@@ -110,7 +110,6 @@ yearRange: yearSlider;
     this.companyMasterList.splice(0);
     this.msgServe.sendToast("Added All Companies","Add Company",1);
   }
-
 
   public dropCompany(id: number){
     this.userSelectedList.forEach( company => {
@@ -196,7 +195,6 @@ yearRange: yearSlider;
         tempCompany.push(company.results[company.results.length - 1 - i]); // copy from the back end of the array
       }
       company.results = tempCompany;
-      console.log(company.results)
     })
 
     //Flip years around in new array tempYears
@@ -205,13 +203,6 @@ yearRange: yearSlider;
       tempYears.push(this.yearList[this.yearList.length - 1 - i]); //Copy for the tail end of the array 
     }
     this.yearList = tempYears; // Reset the yearList array
-  }
-
-  public test(year: number) {
-    console.log(year)
-    console.log( this.yearList.indexOf(1995))
-    console.log(this.yearList)
-
   }
 
 
@@ -224,6 +215,21 @@ yearRange: yearSlider;
     this.viewAs = flag;
   }
 
+  /*CHANGES HOW WE DISPLAY A NUMBER, IN ITS NATURAL STATE, IN MILLIONS OR THOUSANDS */
+  public toBeDisplayedIn() {
+    switch (this.displayIn) {
+      case "default":
+          this.displayIn = "millions";
+          break;
+      case "millions":
+        this.displayIn = "thousands";
+        break; 
+      default:
+        this.displayIn = "default";
+        break; 
+    }
+  }
+
   public getColour(str: string): String {
     return this.colourGen.generateByLetter(str);
   }
@@ -232,21 +238,16 @@ yearRange: yearSlider;
     return this.userSelectedList.length > 0 ? true: false;
   }
 
-  //Initialise the YearRange Object
+  /*Initialise the YearRange Object*/
   private createYearRange() {
-
     if(this.yearList.length > 0){
-
-      this.yearRange = {
-        minYear:   this.yearList[this.yearList.length - 1],
-        maxYear:   this.yearList[0],
-        thumbnail: true,
-        value:     this.yearList[this.yearList.length - 1]
-      }
-      this.yearList = this.yearList;
+        this.yearRange = {
+          minYear:   this.yearList[this.yearList.length - 1],
+          maxYear:   this.yearList[0],
+          thumbnail: true,
+          value:     this.yearList[this.yearList.length - 1]
+        }
     }
   }
 
- 
-  
 }

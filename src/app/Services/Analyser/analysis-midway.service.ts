@@ -232,7 +232,7 @@ export class AnalysisMidwayService  {
                           .pipe(map( response => {
                              let tempArray: number[] = [];
                             for(let i = 0; i < response[0].length; i++){
-                              tempArray.push(response[0][i].year)
+                              tempArray.push(+response[0][i].year)
                             }
                              return tempArray;
                           }));
