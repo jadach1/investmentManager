@@ -198,8 +198,5 @@ export class DisplayAdvancedTableComponent implements OnInit {
     this.listOfCompanies.splice(0)
   }
 
-  /*** WE ONLY WANT TO DISPLAY ****/
-  public isZero(value: number): boolean {
-      return value === 0 ? true : false;
-  }
+ 
 }
