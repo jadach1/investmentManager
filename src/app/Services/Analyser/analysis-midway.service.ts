@@ -24,6 +24,7 @@ export class AnalysisMidwayService  {
    idCounter: number = 1 // used for the ID property in CompanyResults
    company: CompanyResults = new CompanyResults();
    companyMasterList: CompanyResults[] = [];
+   referenceCompanyMasterList: string[] = [];
   // Similar to Obervable; to send companyMasterList across components
    sharedMasterList  = new Subject<CompanyResults[]>();
    sharedUserSelectedMasterList: CompanyResults[] = [];
@@ -55,7 +56,7 @@ export class AnalysisMidwayService  {
   }
   
   /*
-      THIS FUNCTION receives an array of data from a series of Quarterly or Yearly Financial Statements
+      THIS FUNCTION receives an array of data from an API of Quarterly or Yearly Financial Statements
       HOW IT WORKS:
         Seperate each statement by Quarter or Year
         Loop through a list of words which represent tables we want to push data into i.e Revenue, EPS, Gross Profit
@@ -80,11 +81,21 @@ export class AnalysisMidwayService  {
                     //Loop through each element until it matches the table name i.e Revenue to Revenue Table
                     if( table == key){
                       //Construct a statement
-                      let year   = report.date.substring(0,4); 
-                      let month  = report.date.substring(5);
-                      let symbol  = report.symbol;
+                      let year: number   =  report.date.substring(0,4); 
+                      let month: number  =  report.date.substring(5);
+                      let symbol: string =  report.symbol;
+                      let value: number  =  +report[key];
+
+                       //If EPS truncate to 2 decimal places
+                       if(table === "eps"){
+                        console.log("eps")
+                        value = +value.toFixed(2);
+                      } if (table === "EPS"){
+                        console.log("EPS")
+                        value = +value.toFixed(2);
+                      }
                                                                               //report[key] will find the value for what [key] is: revenue, eps, cash
-                      let info    = symbol + "," + month + "," + year + "," + report[key];
+                      let info    = symbol + "," + month + "," + year + "," + value;
                       arrayOfData.push(`insert into financials (category,statement,period,symbol_date_value) values('${key}','${statement}','${period}','${info}');`)
                     }
                   } // report loop
@@ -100,9 +111,8 @@ export class AnalysisMidwayService  {
     if(listOfCategories.length === 0){
       listOfCategories = this.createList();
     }
-    //Create call to DB
-    this.analService
-    .getSelectedData(listOfCategories,companyName,period)
+    //Call to DB, pull RAW data and place into sorted array of Company Results
+    this.analService.getSelectedData(listOfCategories,companyName,period)
     .pipe(map(
             //Define the array of Data we will be receiving from DB 
               (dataArray: { category: string,
@@ -117,53 +127,70 @@ export class AnalysisMidwayService  {
           
           //loop through each dataArray element
           //Goals, to map each category to their corresponding year
-          // dataArray.forEach(async element => {
           dataArray.forEach(element => {
 
-          //Parse the values -Array- so we can evaluate a potential match: COMPANY NAME, DATE, YEAR, VALUE
-          let values = element.symbol_date_value.split(",");
+            //Parse the values -Array- so we can evaluate a potential match: COMPANY NAME, DATE, YEAR, VALUE
+             let values = element.symbol_date_value.split(",");
 
-          //Check to see if there is already data in company
-          if (this.company.results.length != 0){   
-            //Check if similar year exists
-            this.company.results.forEach(companyYear => {
-              if(companyYear.year == +values[2]){
-                //update map value and key of this company; revenue, 200
-                companyYear.data.set(element.category,+values[3]);
-                //mark true that we found an existing year and no need to create a new company
-                flag = true;
-                return;
-                }  //if years match
-              }) // loop, master list
-            } // if master list != 0 
-            
-          // Assuming either the array length is zero or,
-          // We did not find a matching year so therefore, we need to create a new company with a new year
-            if(flag == false){
-              //Initialise New Company to push into Master List
-              tempCompany = new Company();
-              tempCompany.data = new Map();
-              tempCompany.name = values[0];
-              tempCompany.year = +values[2];
-              tempCompany.quarter = 0;
-              tempCompany.data.set(element.category,+values[3]);
-              //Push new Company or updated company into List
-              this.company.results.push(tempCompany)
-              this.company.name = values[0];
-              this.company.period = element.period;
-            } else {  //If flag is true, means we found a company and can skip to the next element
-              //Reset flag to false assuming company not found, until found
-              flag = false;
-            }
+            //Check to see if there is already data in company
+            if (this.company.results.length != 0){   
+              //Check if similar year exists
+              this.company.results.forEach(companyYear => {
+                if(companyYear.year == +values[2]){
+                  //update map value and key of this company; revenue, 200
+                  companyYear.data.set(element.category,+values[3]);
+                  //mark true that we found an existing year and no need to create a new company
+                  flag = true;
+                  return;
+                  }  //if years match
+                }) // loop, master list
+              } // if master list != 0 
+              
+            // Assuming either the array length is zero or,
+            // We did not find a matching year so therefore, we need to create a new company with a new year
+              if(flag == false){
+                //Initialise New Company to push into Master List
+                tempCompany = new Company();
+                tempCompany.data = new Map();
+                tempCompany.name = values[0];
+                tempCompany.year = +values[2];
+                tempCompany.quarter = 0;
+                tempCompany.data.set(element.category,+values[3]);
+                //Push new Company or updated company into List
+                this.company.results.push(tempCompany)
+                this.company.name = values[0];
+                this.company.period = element.period;
+              } else {  //If flag is true, means we found a company and can skip to the next element
+                //Reset flag to false assuming company not found, until found
+                flag = false;
+              }
           }); // Loop through array of Company info from DB
           this.company.id = this.idCounter;
     }))
+    .pipe(map( () => {
+      //Reorder the companies descending from latest year
+      let tempCompanyResults = new Company();
+      for(let i = 1; i < this.company.results.length; i++){
+        for(let k = 0; k < i; k++){
+          //If the outerloop company is > swap
+          if(this.company.results[i].year > this.company.results[k].year){
+            tempCompanyResults = this.company.results[i];
+            this.company.results[i] = this.company.results[k];
+            this.company.results[k] = tempCompanyResults;
+          }
+        }
+      }
+    }))
     .subscribe(
+
                 res => {this.companyMasterList.push(this.company),
+                        this.ammendReferenceCompanyMasterList(this.company.name),
                         this.msgService.sendToast("Successfully added " + this.company.name,"Search Criteria", 1)
                       },
+
                 err => {this.msgService.addError("Error getting search results: "),
                         this.msgService.addError(err)},
+                        
                 ()  => { 
                          this.company = new CompanyResults(), 
                          this.idCounter++, 
@@ -219,6 +246,33 @@ export class AnalysisMidwayService  {
   public getUserSelectedList(): CompanyResults[] {
     return this.sharedUserSelectedMasterList;
   }
+
+  /*******************************************************
+   * REFERENCE TO COMPANYMASTERLIST - list of companies we have stored already
+   *****************************************/
+  public ammendReferenceCompanyMasterList(name: string) {
+    this.referenceCompanyMasterList.push(name);
+  }
+
+  public deleteReferenceCompanyMasterList(name: string){
+    for(let i = 0; i < this.referenceCompanyMasterList.length; i++){
+        if(name === this.referenceCompanyMasterList[i]){
+          this.referenceCompanyMasterList.splice(i,1);
+        }
+    }
+  }
+
+  public checkRefernceIfCompanyExists(name: string): boolean {
+    let flag: boolean = false;
+    for(let i = 0; i < this.referenceCompanyMasterList.length; i++){
+      if(name === this.referenceCompanyMasterList[i]){
+        flag = true;
+        break;
+      }
+    }
+    return flag;
+  }
+
   /*/************************   DISPLAY COMPANY INFORMATION    *//************************/
   public getCategories(): Observable<{category: string,statement: string}> {
       return this.analService.getCategories()

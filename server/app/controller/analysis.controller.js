@@ -2,10 +2,7 @@ const db = require('../config/db.config.js');
 
 exports.postFinancials = ( req, res ) => {
     const data = req.body;
-    console.log(data)
-   // db.sequelize.query()
    data.forEach(element => {
-       console.log(element)
        db.sequelize.query(element).then(
            res => res.status(200).json("Updated " + element)
        ).catch(

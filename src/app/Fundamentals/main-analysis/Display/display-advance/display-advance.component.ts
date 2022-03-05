@@ -25,10 +25,13 @@ companyMasterList: CompanyResults[] = [];
 userSelectedList: CompanyResults[] = [];
 categoryMasterList: string[] = [];
 categoriesSelected: string[] = [];
-direction: boolean  = true //For either in Descending or Ascending order, true = descending
-viewAs: boolean     = true; //For displaying either in $ or %
-displayIn: string   = "default"; //For displaying in its default form or in thousands or millions.
-yearList:  number[] = [];  // Used to display all the years available in DB for company financials
+
+direction: boolean    = true //For either in Descending or Ascending order, true = descending
+viewAs: boolean       = true; //For displaying either in $ or %
+displayIn: string     = "default"; //For displaying in its default form or in thousands or millions.
+displayFormat: string = "Precise"; //Display based on the year of statement or just in uniformity
+
+yearList:  number[]   = [];  // Used to display all the years available in DB for company financials
 yearRange: yearSlider;
 
   constructor(private analMidServe: AnalysisMidwayService,
@@ -75,34 +78,44 @@ yearRange: yearSlider;
       COMPANY MASTER LIST MANIPULATION
   \****************************************************************************/
 
-  //Iterate through all members of the userSelectedList to see if company we are addomg already exists
+  /* Iterate through all members of the userSelectedList to see if company we are addomg already exists */
   public addCompany(company: CompanyResults) {
-
+    //If nothing is in the list we can just amend
     if(this.userSelectedList.length === 0 ){
-      this.userSelectedList.push(company)
+      this.addCompanyPlus(company)
     } else {
 
       // Check to make sure company doesn't already belong to array
       try{
+
         this.userSelectedList.forEach(userCmp => {
+ 
+          //If we find company exists, throw ourselves out of array and prevent from ammending
           if(userCmp.id === company.id) {
               throw "exists"
           }
-        })
+          
+        }) //for each
+
+        //Company doesn't exist and can be added
+        this.addCompanyPlus(company)
+
       } catch (company) {
         if (company != "exists") throw company;
         this.msgServe.sendToast("Company Already Exists", "Add Company",4);
       }
-      
-      //Company doesn't exist and can be added
-        this.userSelectedList.push(company);
-        this.companyMasterList.splice(this.companyMasterList.indexOf(company),1);
-        this.msgServe.sendToast("Added " + company.name, "Add Company",1);
-   
+        
     }
   }
 
-  //Add all companies to userSelectedList and Remove from MasterList
+  //Adds a company to userSelectedList & Removes a company from MasterList
+  private addCompanyPlus(company: CompanyResults){
+    this.userSelectedList.push(company);
+    this.companyMasterList.splice(this.companyMasterList.indexOf(company),1);
+    this.msgServe.sendToast("Added " + company.name, "Add Company",1);
+  }
+
+  /*Add all companies to userSelectedList and Remove from MasterList*/
   public addAllCompanies() {
       this.companyMasterList.forEach( company => {
        this.userSelectedList.push(company);    
@@ -111,13 +124,30 @@ yearRange: yearSlider;
     this.msgServe.sendToast("Added All Companies","Add Company",1);
   }
 
-  public dropCompany(id: number){
-    this.userSelectedList.forEach( company => {
-      if(company.id === id) {
-        this.userSelectedList.splice(this.userSelectedList.indexOf(company),1);
-        this.msgServe.sendToast("Removed " + company.name,"Remove Company",2);
+  public dropCompanyMasterList(id: number){
+    for(let i = 0; i < this.companyMasterList.length; i++){
+      if(this.companyMasterList[i].id === id) {
+        this.analMidServe.deleteReferenceCompanyMasterList(this.companyMasterList[i].name)
+        this.msgServe.sendToast("Removed " + this.companyMasterList[i].name,"Remove Company",2);
+        this.companyMasterList.splice(this.companyMasterList.indexOf(this.companyMasterList[i]),1);
+        break;
       }
-    })
+    }
+}
+
+  /***************************************************************************\
+      COMPANY USER LIST MANIPULATION
+  \****************************************************************************/
+
+  public dropCompany(id: number){
+      for(let i = 0; i < this.userSelectedList.length; i++){
+        if(this.userSelectedList[i].id === id) {
+          this.companyMasterList.push(this.userSelectedList[i]);
+          this.msgServe.sendToast("Removed " + this.userSelectedList[i].name,"Remove Company",2);
+          this.userSelectedList.splice(this.userSelectedList.indexOf(this.userSelectedList[i]),1);
+          break;
+        }
+      }
   }
 
   //Drops all companies from UserSelectedList and places them in MasterList
@@ -228,6 +258,11 @@ yearRange: yearSlider;
         this.displayIn = "default";
         break; 
     }
+  }
+
+   /*CHANGES HOW WE DISPLAY RESULTS*/
+   public formatDisplay() {
+    this.displayFormat === "Precise" ? this.displayFormat = "Uniform" : this.displayFormat = "Precise";
   }
 
   public getColour(str: string): String {

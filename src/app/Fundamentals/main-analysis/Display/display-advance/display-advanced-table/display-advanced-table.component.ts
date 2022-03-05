@@ -14,8 +14,9 @@ export class DisplayAdvancedTableComponent implements OnInit {
   @Input() categoriesSelected: string[] = [];
 
   @Input() displayIn: string; //Displayed in default, thousands or millions
-  @Input() displayedAs: boolean = true; //True for $ and false for %
-  @Input() direction: boolean = true;// true for Descending
+  @Input() displayedAs: boolean   = true; //True for $ and false for %
+  @Input() displayFormat: string;   //Precision or uniform
+  @Input() direction: boolean     = true;// true for Descending
 
   @Input() yearList: number[] = []; //This gets automatically sorted in the display-advacned component
   @Input() yearRange: {
@@ -34,32 +35,65 @@ export class DisplayAdvancedTableComponent implements OnInit {
   /***********************= FUNCTIONS TO DISPLAY DATA IN TABLES =***********************/
 
   /*** RETURNS THE YEARS IN REFERENCE TO THE RANGE ***/
-  public getYears(): Array<number> | void {
- 
+  public getYears(): Array<number|string> | void {
+   //Descend?
     if (this.direction){
+      //Descending
+      let difference = this.yearList.indexOf(this.yearRange.value);
+      let newArray  = new Array<number|string>(difference + 1);
 
-        let difference = this.yearList.indexOf(this.yearRange.value);
-        let newArray: number[] = new Array<number>(difference + 1);
-  
-        //Descending
+      //Precise v Uniform
+      if(this.displayFormat == "Precise"){
+
+        //PRECISE
         for(let i = 0; i <= difference; i++) {
           newArray[i] = this.yearList[i];
         }
 
-        return newArray;
+      } else {
+        //UNIFORM
 
-    } else {
+        //Descending so first occurence is latest
+         newArray[0] = "Latest"
 
-        let difference = this.yearList.length - this.yearList.indexOf(this.yearRange.value);
-        let newArray: number[] = new Array<number>(difference + 1);
-  
-        //ascending
+        for(let i = 1; i < difference; i++) {
+          newArray[i] = ".";
+        }
+
+        //Descension into oldest
+         newArray[difference] = "Oldest"
+      }
+
+      return newArray;
+
+  } else {
+
+     //ascending
+      let difference = this.yearList.length - this.yearList.indexOf(this.yearRange.value);
+      let newArray = new Array<number|string>(difference + 1);
+
+      if(this.displayFormat=="Precise"){
+
         for(let i = 0; i < difference; i++) {
           newArray[i] = this.yearList[this.yearList.length - difference + i];
         }
+  
+      } else {
+        //UNIFORM
 
-        return newArray;
-    }
+        //Ascension, start from oldest
+         newArray[0] = "Oldest";
+
+        for(let i = 1; i < difference; i++) {
+          newArray[i] = ".";
+        }
+
+         newArray[difference] = "Latest"
+
+      }
+ 
+      return newArray;
+  }
 
   }
 
@@ -78,27 +112,34 @@ export class DisplayAdvancedTableComponent implements OnInit {
   public fetchCategoryValue(companyName: string): number[] | void {
     let tempArray = new Array<number>();
     try{
-           //Go through each company
+           //1. Go through each company
           this.listOfCompanies.forEach( company => {
-
-            //find the company we want to extract data from
+       
+            //2. find the company we want to extract data from
             if ( company.name === companyName) {
 
-              //Check to see what year this companies newest earnings are reported
-             for(let i = 0; i < this.yearList.length; i++){
+              //2.A. Only execute next seciton of code IF we want Precision relating to years
+              if(this.displayFormat == "Precise"){
+                  console.log("precision")
+                  //Check to see what year this companies newest earnings are reported
+                  for(let i = 0; i < this.yearList.length; i++){
 
-                //Check to see which year matches with the latest results
-                  if(this.yearList[i] == company.results[0].year) { 
-                  //  console.log("found matching year " + this.yearList[i]);
-                  break;
-                } else { 
-                  //If we are descending or ascending and below the yearRange value, push 0
-                  if(this.yearList[i] >= this.yearRange.value && !this.direction || this.direction)
-                          tempArray.push(0);
-                    }
-              } // for loop
+                    //Check to see which year matches with the latest results
+                      if(this.yearList[i] == company.results[0].year) { 
+                      //  console.log("found matching year " + this.yearList[i]);
+                      break;
+                    } else { 
+                      //If we are descending or ascending and below the yearRange value, push 0
+                      if(this.yearList[i] >= this.yearRange.value && !this.direction || this.direction)
+                      {
+                        tempArray.push(0); 
+                      }     
+                        }
+                  } // for loop
 
-                //Get each value based on desired category
+               } //If
+            
+                //3. Get each value based on desired category
                 company.results.forEach(period => {     
 
                         //Ensure the year is greater than the minimum yearRange value
@@ -122,9 +163,12 @@ export class DisplayAdvancedTableComponent implements OnInit {
 
             }  //If   
           })// forEach
+
     } catch (array) {
+
+      //4. Check if we want displayed as % or $
         switch (array) {
-          //Check if we want displayed as %
+
           case "array":
                 if(!this.displayedAs) {
                   tempArray = this.convertToPercent(tempArray);
@@ -142,6 +186,7 @@ export class DisplayAdvancedTableComponent implements OnInit {
     //assume we are in desending, so direciton is true
     let tempArray: number[] = [];
 
+    //Check the direction we will be providing results
     if(this.direction){
 
       //Descending Order

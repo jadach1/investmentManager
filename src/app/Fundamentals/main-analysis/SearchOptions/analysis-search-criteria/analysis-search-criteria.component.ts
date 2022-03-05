@@ -73,8 +73,20 @@ listOfCategories: string[] = [];
  }
 
  public onSubmit() {
+   //Check that company and period are selected
    if(this.selectedCompany != "" && this.periodSelected != "") {
-    this.analMidService.getCompany(this.selectedCompany, this.periodSelected, this.listOfCategories)
+
+     //Check to make sure company doesn't already exist
+     if(!this.analMidService.checkRefernceIfCompanyExists(this.selectedCompany)){
+
+       this.analMidService.getCompany(this.selectedCompany, this.periodSelected, this.listOfCategories)
+
+     } else {
+
+      this.messageService.addError("You cannot add a duplicate company " + this.selectedCompany + " already exists")
+     
+    }
+
    } else {
     this.messageService.addError("You must select a valid Company and Period in order to get a Result")
    }
