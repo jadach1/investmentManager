@@ -6,7 +6,16 @@
             <div ngbDropdown class="inline">
             <button class="btn btn-outline-primary inline" ngbDropdownToggle>Select Company</button>
                 <div ngbDropdownMenu >
-                <li ngbDropdownItem *ngFor="let name of companies" (click)="selectCompanyName(name)">{{name}}</li>
+                    <li ngbDropdownItem 
+                        *ngFor="let name of companies" 
+                        (click)="selectCompanyName(name)">{{name}} 
+                        <!--DELETE COMPANY-->
+                        <span role="button" 
+                        style="color: red; float: right;"
+                        (click)="dropName(name)"> 
+                        &#10060;
+                        </span>
+                    </li>
                 </div>
             </div> 
             <!-- TEXT BOX -->
@@ -42,6 +51,9 @@
                     </div>
                     <div class="col">
                         <button class="btn btn-outline-primary enlarge" (click)="statement='cash-flow-statement'">Cash Flow</button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-outline-primary enlarge" (click)="createProfile(selectedCompany)">CREATE PROFILE</button>
                     </div>
             </div>
             <div class="row" *ngIf="statement">

@@ -157,6 +157,9 @@ exports.checkIfExists = (req, res) => {
 		})
 	};
 
+	/******************
+		LIST OF COMPANY NAMES TO REFERENCE FOR GETTING NEW DATA FROM API
+	******************/
 	exports.insertNewName = (req, res) => {
 		const symbol = req.params.symbol;
 		db.sequelize.query('insert into company_names (symbol) values (\''  + symbol + '\') ')
@@ -164,4 +167,16 @@ exports.checkIfExists = (req, res) => {
 								 res.status(200).json( {msg: "successfully added company: " + symbol })
 							) 
 					.catch( err  => res.status(500).json(err))
+	};
+
+	exports.deleteAssetName = (req, res) => {
+		const symbol = req.params.symbol;
+		console.log("live")
+		db.sequelize.query(  'delete from company_names where symbol=\'' + symbol + '\';  ')
+					.then( 
+						res => res.status(200).json( {msg: "successfully deleted company " + symbol})
+					)
+					.catch(
+						err => res.status(500).json(err)
+					)
 	};

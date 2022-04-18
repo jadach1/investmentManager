@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import {AnalysisService}       from '../../Services/Analyser/analysis.service'
 import {MessageService}        from '../../Services/Messages/message.service'
 import {AnalysisMidwayService} from '../../Services/Analyser/analysis-midway.service'
+import { CompileShallowModuleMetadata } from '@angular/compiler';
 
 
 @Component({
@@ -27,10 +28,7 @@ export class DataManagerComponent implements OnInit {
               ) { }
 
   ngOnInit(): void {
-     this.analMidService.getAssetNames().subscribe(
-       res => this.companies = res,
-       err => this.msgService.addError("getAssetNames failed: " + err)
-     )
+   this.getNames()
   }
 
 
@@ -55,7 +53,7 @@ export class DataManagerComponent implements OnInit {
                                   res => tempArray = res,
                                   err => console.log("failed getting financial Data: " + err),
                                   // Manage Data Retrieved
-                                  ()  => this.analMidService.parseData(tempArray,this.statement,this.period)
+                                  ()  => this.analMidService.parseFinancialData(tempArray,this.statement,this.period)
                                       .then(
                                             // Post Desired data to DB
                                             financialList => this.analService.postFinancialData(financialList)
@@ -66,7 +64,23 @@ export class DataManagerComponent implements OnInit {
                                             )
                       )
   }
+
+  public createProfile(name: string) {
+
+  }
   
+  /************************************************************
+    REFERENCE LIST OF AVAILABLE COMPANY NAMES TO GET DATA FROM
+  ************************************************************/
+
+  private getNames() {
+    this.companies = [];
+    this.analMidService.getAssetNames().subscribe(
+      res => this.companies = res,
+      err => this.msgService.addError("getAssetNames failed: " + err)
+    )
+  }
+
   //Adds a name to the database's list of company names
   public addName() {
     if (this.symbol != ""){
@@ -78,4 +92,12 @@ export class DataManagerComponent implements OnInit {
         }  
   }
 
+  public dropName(name: string) {
+    this.analService.deleteName(name)
+        .subscribe(
+                    res => console.log(res),
+                    err => {this.msgService.sendToast("error deleting " + name,"Drop Name",2), console.log(err)},
+                    () => this.getNames()
+         )
+  }
 }

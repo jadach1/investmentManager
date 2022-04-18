@@ -84,11 +84,11 @@ export class DisplayAdvancedTableComponent implements OnInit {
         //Ascension, start from oldest
          newArray[0] = "Oldest";
 
-        for(let i = 1; i < difference; i++) {
+        for(let i = 1; i < difference - 1; i++) {
           newArray[i] = ".";
         }
 
-         newArray[difference] = "Latest"
+         newArray[difference - 1] = "Latest"
 
       }
  
@@ -120,7 +120,7 @@ export class DisplayAdvancedTableComponent implements OnInit {
 
               //2.A. Only execute next seciton of code IF we want Precision relating to years
               if(this.displayFormat == "Precise"){
-                  console.log("precision")
+
                   //Check to see what year this companies newest earnings are reported
                   for(let i = 0; i < this.yearList.length; i++){
 

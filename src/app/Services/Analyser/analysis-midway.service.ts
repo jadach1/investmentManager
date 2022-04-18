@@ -6,6 +6,7 @@ import {MessageService}          from '../../Services/Messages/message.service'
 import {AnalysisService}         from './analysis.service'
 
 import {Company, CompanyResults} from '../../../Models/Analyser/Company'
+import { IncomingMessage } from 'http';
 
 @Injectable({
   providedIn: 'root'
@@ -63,7 +64,7 @@ export class AnalysisMidwayService  {
         Loop through each keyword of the Individual Report to find a matching word i.e Revenue and Revenue
         Creates an array of strings, each representing an insert statement which we will send to DB 
     */
-   public async parseData(tempArray: Array<any>,statement: string,period: string): Promise<Array<string>>{
+   public async parseFinancialData(tempArray: Array<any>,statement: string,period: string): Promise<Array<string>>{
     if( tempArray == undefined){
       console.log("error, stock you are attempting to retrieve was not found")
       return null;
@@ -103,6 +104,19 @@ export class AnalysisMidwayService  {
       });  //tempArray loop
       return arrayOfData;
     }
+  }
+
+  .create a new model profile
+  . get data, returns an observable, subscribe
+  . pipe the data , map and parse it (data will be: industry, mktcap, price, symbol)
+  . get more data from financials ( eps, net income , shares, )
+  . calculate p/e
+  . push to db 
+
+  public getProfileData(tempArray: Array<any>): Promise<any> {
+    
+    
+    return tempArray;
   }
 
   /************************ GET COMPANY FINANCIAL DATA FROM DB + PARSING ***********************/

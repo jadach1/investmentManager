@@ -37,21 +37,10 @@ export class AnalysisService {
     return this.http.post(url, httpOptions)  
   }
 
-   // Return API data from external API
-  getFinancialData(symbol: string,statement: string,period: string):Observable<object>{
-    const key = '3340dea2b67650a5e57a77796910cb55';
-    let limit: string;
-    console.log(period)
-    period == "quarter" ? limit = "?period=quarter&limit=400" : limit = "?limit=120";
-
-    let URL   = 'https://financialmodelingprep.com/api/v3/'+statement+'/'+symbol+limit+'&apikey='+key;
-
-    if (symbol == "" || statement == ""){
-      console.log("Can't fetch data for blank: " + symbol + " : " + statement)
-    } else {
-      console.log(URL)
-      return this.http.get<object>(URL);
-    }
+   //Deletes an Asset name for list of Assets in Get Data
+   deleteName(symbol: string) {
+    let url = "http://localhost:8080/api/deleteName/" + symbol;
+    return this.http.delete(url, httpOptions)  
   }
 
   // Sends Data to DB from 3rd party API
@@ -95,4 +84,29 @@ export class AnalysisService {
     return this.http.get<object>(url);
   }
 
+  /*****************************************
+   *  CALLS TO FOREIGN API
+   * *************************************** */
+
+    // Return API data from external API
+    getFinancialData(symbol: string,statement: string,period: string):Observable<object>{
+      const key = '3340dea2b67650a5e57a77796910cb55';
+      let limit: string;
+      console.log(period)
+      period == "quarter" ? limit = "?period=quarter&limit=400" : limit = "?limit=120";
+  
+      let URL   = 'https://financialmodelingprep.com/api/v3/'+statement+'/'+symbol+limit+'&apikey='+key;
+  
+      if (symbol == "" || statement == ""){
+        console.log("Can't fetch data for blank: " + symbol + " : " + statement)
+      } else {
+        console.log(URL)
+        return this.http.get<object>(URL);
+      }
+    }
+  
+    getCompanyProfile(symbol: string):Observable<object> {
+      let url = 'https://financialmodelingprep.com/api/v3/profile/'+symbol+'?apikey=3340dea2b67650a5e57a77796910cb55'
+      return this.http.get<object>(url);
+    }
 }

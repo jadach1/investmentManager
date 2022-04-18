@@ -13,3 +13,24 @@ export class CompanyResults{
   period: string; // quarterly or yearly
   results: Company[] = [];  //For storing year 2020, 2019, 2018 etc
 }
+
+//Displays an overview of the company
+export class companyOverview{
+  symbol:       string;
+  price:        number;
+  marketCap:    number;
+  eps:          number;
+  netIncome:    number;
+  PEratio:      number;
+  shareholders: number;
+}
+
+//Description of the company
+export class companyProfile{
+  symbol:      string;
+  mktCap:      number;
+  industry:    string;
+  sector:      string;
+  employees:   number;
+  description: string;
+}

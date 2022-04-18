@@ -28,7 +28,11 @@ module.exports = function(capp) {
      //Retrieve all Assets by Owner
      capp.get('/api/allassetsOwner/:owner', CurrentAssets.findAllByOwner);
 
-     capp.post('/api/insertNewName/:symbol', CurrentAssets.insertNewName)
+     /*REFERENCE TO GET DATA FOR API - LIST OF AVAILABLE COMPANY NAMES */
+
+        capp.post('/api/insertNewName/:symbol', CurrentAssets.insertNewName);
+
+         capp.delete('/api/deleteName/:symbol', CurrentAssets.deleteAssetName);
 
     /*********************** ARCHVIED ASSETS  ***************************/
     capp.put('/api/transferAsset/:id/:status', CurrentAssets.transferAsset);
