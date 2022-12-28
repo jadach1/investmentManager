@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import {AnalysisService}       from '../../Services/Analyser/analysis.service'
 import {MessageService}        from '../../Services/Messages/message.service'
 import {AnalysisMidwayService} from '../../Services/Analyser/analysis-midway.service'
-import { CompileShallowModuleMetadata } from '@angular/compiler';
 
 
 @Component({
@@ -18,7 +17,7 @@ export class DataManagerComponent implements OnInit {
   companies: string[];
   selectedCompany: string = "";
   period: string = "year";
-  symbol: string;
+  symbol: string; // for input box
   statement: string = "";
   
   
@@ -66,7 +65,7 @@ export class DataManagerComponent implements OnInit {
   }
 
   public createProfile(name: string) {
-
+      this.analMidService.createProfileData(this.selectedCompany);
   }
   
   /************************************************************

@@ -1,4 +1,5 @@
 const db = require('../config/db.config.js');
+const profile = db.profile;
 
 exports.postFinancials = ( req, res ) => {
     const data = req.body;
@@ -27,7 +28,7 @@ exports.getFinancials = ( req, res ) => {
         query = 'select * from financials where period=\'' + period + '\' and statement=\'' + statem + '\' and substring(symbol_date_value for ' + symbol.length + ')=\'' + symbol + '\';'
     }
     db.sequelize.query(query).then(
-        Fin => res.json(Fin)
+        Fin => res(Fin.toJSON())
     ).catch(
         err => res.status(500).json("No Data Found.  Either symbol, statement of period of time does not exist: " + err)
     ).finally(
@@ -58,14 +59,15 @@ exports.getCategories = (req, res) => {
 }
 
 exports.getSingleCompanyData = (req, res) => {
-    const categories = req.params.categories;
+
+    const categories = req.params.categories;  //Array
     const symbol     = req.params.company;
     const period     = req.params.period;
 
     const query = 'select * from financials where category in ('+categories+') and period=\''+period+'\' and substring(symbol_date_value for '+symbol.length+')=\''+symbol+'\';'
     db.sequelize.query(query)
                 .then(
-                    DATA => res.json(DATA[0])
+                    DATA =>  res.json(DATA[0])
                 ).catch(
                     err => console.log("Failed to get Single Company Data " + err)
                 )
@@ -92,3 +94,46 @@ exports.getAllYears = (req, res) => {
                     err => res.json(err)
                 )
 }
+
+/*******************************************************************************/ 
+// COMPANY PROFILE DATA
+/*******************************************************************************/ 
+
+exports.createNewProfile = (req, res) => {
+    console.log("new profile")
+    // console.log(req.body)
+      profile.create({
+        "symbol": req.body.symbol,
+        "price": req.body.price,
+        "mktcap": req.body.mktCap,
+        "name": req.body.name,
+        "exchange": req.body.exchange,
+        "industry": req.body.industry,
+        "sector": req.body.sector,
+        "description": req.body.description,
+        "employees": req.body.employees,
+        "image": req.body.image,
+        "ipo": req.body.ipo,
+    }).then( profile => { console.log("Creating New Company Profile "), console.log(profile)
+    }).catch( err => {console.log(err)})
+}
+
+exports.getSingleProfile = (req, res) => {
+    console.log("Fetching Profile")
+    const company = req.params.symbol
+    profile.findOne({ where: {symbol: company ?? 'MSFT'}
+        }).then( profile => res.json(profile))
+          .catch( err => console.log(err))
+}
+
+// Returns all profiles the user has requested
+exports.getAllSelectedProfiles = (req, res) => {
+    console.log("Fetching All Selected Profiles")
+    const companies = req.params.symbols ?? undefined;
+    console.log(companies)
+    profile.findAll({ where: {symbol: [companies] }
+        }).then( profile => res.json(profile))
+          .catch( err => console.log(err))
+}
+
+

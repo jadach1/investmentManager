@@ -19,9 +19,7 @@ require('./app/route/owners-contributions.route.js')(app);
 require('./app/route/misc.route.js')(app);
 require('./app/route/analysis.route.js')(app);
 
-app.get('/page',(req,res) => {
-  res.send("hello world")
-})
+
 
 // Create a Server
 var server = app.listen(8080, function () {

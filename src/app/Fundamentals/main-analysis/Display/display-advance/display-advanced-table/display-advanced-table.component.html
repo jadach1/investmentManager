@@ -1,5 +1,4 @@
 <div >
-  <button (click)="execute()">execute</button>
   <div style="background-color: springgreen; color: chocolate;">
 
     <table class="centreThis table enlarge">
@@ -17,7 +16,7 @@
       </tr>
       <tr  class="bottomBorder" *ngFor="let company of displayCompanies()">
         <th class="rightBorder" scope="row" >{{company}}</th>  
-        <td class="rightBorder" *ngFor="let value of fetchCategoryValue(company)"> {{value}} 
+        <td class="rightBorder" *ngFor="let value of fetchCategoryValue(company)"> {{value | currency}} 
           <span *ngIf="!displayedAs">&#37;</span>
         </td>
       </tr>

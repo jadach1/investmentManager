@@ -15,7 +15,7 @@ export class CompanyResults{
 }
 
 //Displays an overview of the company
-export class companyOverview{
+export class companyOverviewMaster{
   symbol:       string;
   price:        number;
   marketCap:    number;
@@ -23,14 +23,25 @@ export class companyOverview{
   netIncome:    number;
   PEratio:      number;
   shareholders: number;
-}
-
-//Description of the company
-export class companyProfile{
-  symbol:      string;
-  mktCap:      number;
+  image:       string;
   industry:    string;
   sector:      string;
   employees:   number;
   description: string;
+}
+
+// Description of Compnay to be sent to DB
+export class companyProfileCreation{
+  symbol: string;
+  price:  number;
+  mktCap: number;
+  name: string;
+  exchange: string;
+  industry: string;
+  sector: string;
+  description: string;
+  employees: number;
+  image: string;
+  ipo: string;
+
 }

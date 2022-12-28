@@ -1,12 +1,15 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import {map}                  from 'rxjs/operators'
+import {count, isEmpty, map, tap}                  from 'rxjs/operators'
 import { Observable, Subject }         from 'rxjs';
 
 import {MessageService}          from '../../Services/Messages/message.service'
 import {AnalysisService}         from './analysis.service'
 
-import {Company, CompanyResults} from '../../../Models/Analyser/Company'
-import { IncomingMessage } from 'http';
+import {Company, 
+        CompanyResults, 
+        companyOverviewMaster,
+        companyProfileCreation}  from '../../../Models/Analyser/Company'
+
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +29,7 @@ export class AnalysisMidwayService  {
    company: CompanyResults = new CompanyResults();
    companyMasterList: CompanyResults[] = [];
    referenceCompanyMasterList: string[] = [];
+ 
   // Similar to Obervable; to send companyMasterList across components
    sharedMasterList  = new Subject<CompanyResults[]>();
    sharedUserSelectedMasterList: CompanyResults[] = [];
@@ -65,25 +69,29 @@ export class AnalysisMidwayService  {
         Creates an array of strings, each representing an insert statement which we will send to DB 
     */
    public async parseFinancialData(tempArray: Array<any>,statement: string,period: string): Promise<Array<string>>{
+    
     if( tempArray == undefined){
       console.log("error, stock you are attempting to retrieve was not found")
       return null;
     } else {
+
        //Will hold all of the insert statements into the Database
       let arrayOfData = new Array<string>();
-       //matches statement to array of table names we want
+      
+      //matches statement to array of table names we want
       let tableNames = this.tableMap.get(statement);
+      
       //Loop through each quarter/year of the fetched data
       tempArray.forEach(report => {
         //Loop through each table we are looking for: Revenue, Cash, Debt etc
         tableNames.forEach(table => {
-                  //Each key int the report is: Revenue, Cash, Debt etc
+                  //Each key in the report is: Revenue, Cash, Debt etc
                   for (const key in report) {
                     //Loop through each element until it matches the table name i.e Revenue to Revenue Table
                     if( table == key){
                       //Construct a statement
-                      let year: number   =  report.date.substring(0,4); 
-                      let month: number  =  report.date.substring(5);
+                      let year: number   =  report.fillingDate.substring(0,4); 
+                      let month: number  =  report.fillingDate.substring(5);
                       let symbol: string =  report.symbol;
                       let value: number  =  +report[key];
 
@@ -106,17 +114,50 @@ export class AnalysisMidwayService  {
     }
   }
 
-  .create a new model profile
-  . get data, returns an observable, subscribe
-  . pipe the data , map and parse it (data will be: industry, mktcap, price, symbol)
-  . get more data from financials ( eps, net income , shares, )
-  . calculate p/e
-  . push to db 
+  /*********************** CREATE  NEW PROFILE DATA  ************************/
+  public createProfileData(symbol: string) {
+    let compProfile = new companyProfileCreation();
+    this.analService.getCompanyProfile(symbol)
+        .pipe( 
+                map( data => {
+                 let tempMap = new Map<string, any>();
+                 let tempArray = new companyProfileCreation();
+                 // Create
+                 for( const [key, value] of Object.entries(data[0])){
+                    tempMap.set(key,value);
+                 }
+                 
+                  console.log(tempMap)
+                  tempArray.description = data[0].description;
+                 // tempArray.description = tempMap.get("description");
+                  tempArray.employees = +tempMap.get("fullTimeEmployees");
+                  tempArray.exchange = tempMap.get("exchange");
+                  tempArray.image = tempMap.get("image");
+                  tempArray.industry = tempMap.get("industry");
+                  tempArray.ipo = data[0].ipoDate;
+                  tempArray.mktCap = +tempMap.get("mktCap");
+                  tempArray.name = tempMap.get("companyName");
+                  tempArray.price = +tempMap.get("price");
+                  tempArray.sector = tempMap.get("sector");
+                  tempArray.symbol = tempMap.get("symbol");
 
-  public getProfileData(tempArray: Array<any>): Promise<any> {
+                  return tempArray;
+                }) )
+        .subscribe(
+                    res => {console.log(res), compProfile = res},
+                    err => console.log(err),
+                    ()  => this.analService.postCompanyProfile(compProfile)
+                                            .subscribe(
+                                                        res => console.log("all done profile"),
+                                                        err => console.log(err)
+                                            )
+    )
+  }
+
+  public fetchProfileData(tempArray: Array<any>) {
     
     
-    return tempArray;
+    //return tempArray;
   }
 
   /************************ GET COMPANY FINANCIAL DATA FROM DB + PARSING ***********************/
@@ -127,6 +168,14 @@ export class AnalysisMidwayService  {
     }
     //Call to DB, pull RAW data and place into sorted array of Company Results
     this.analService.getSelectedData(listOfCategories,companyName,period)
+    // Check to see if Nothing was found in DB
+    .pipe(tap(
+      data => {
+        if( Object.keys(data).length === 0) {
+          throw "casualty"
+        }
+      }
+    ))
     .pipe(map(
             //Define the array of Data we will be receiving from DB 
               (dataArray: { category: string,
@@ -198,11 +247,12 @@ export class AnalysisMidwayService  {
     .subscribe(
 
                 res => {this.companyMasterList.push(this.company),
-                        this.ammendReferenceCompanyMasterList(this.company.name),
-                        this.msgService.sendToast("Successfully added " + this.company.name,"Search Criteria", 1)
+                        this.ammendReferenceCompanyMasterList(companyName + period),
+                        this.msgService.sendToast("Successfully added " + companyName,"Search Criteria", 1)
                       },
 
-                err => {this.msgService.addError("Error getting search results: "),
+                err => {this.msgService.addError("Error getting search results for: " + companyName),
+                        this.msgService.sendToast("Error Company " + companyName + " For Period of + " + period + " Does Not Exist", "Search Error", 2),
                         this.msgService.addError(err)},
                         
                 ()  => { 
@@ -276,10 +326,11 @@ export class AnalysisMidwayService  {
     }
   }
 
-  public checkRefernceIfCompanyExists(name: string): boolean {
+  public checkRefernceIfCompanyExists(name: string, period: string): boolean {
     let flag: boolean = false;
     for(let i = 0; i < this.referenceCompanyMasterList.length; i++){
-      if(name === this.referenceCompanyMasterList[i]){
+      if(name + period === this.referenceCompanyMasterList[i] ){
+        console.log(name+period + " vs " + this.referenceCompanyMasterList[i])
         flag = true;
         break;
       }

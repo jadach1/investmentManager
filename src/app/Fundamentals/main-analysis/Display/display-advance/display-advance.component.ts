@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges } from '@angular/core';
 import { map } from 'rxjs/operators';
 import {CompanyResults, Company} from '../../../../../Models/Analyser/Company'
 import {AnalysisMidwayService} from '../../../../Services/Analyser/analysis-midway.service'
@@ -33,6 +33,8 @@ displayFormat: string = "Precise"; //Display based on the year of statement or j
 
 yearList:  number[]   = [];  // Used to display all the years available in DB for company financials
 yearRange: yearSlider;
+
+jeriod: boolean       = true; // True is for Annual as False is for Quarterly
 
   constructor(private analMidServe: AnalysisMidwayService,
               private analService: AnalysisService,
@@ -69,10 +71,10 @@ yearRange: yearSlider;
   }
 
   ngOnDestroy(): void {
+      console.log("Saving Users Selection")
        //we need to save the userSelectedList or all companies will be lost
       this.analMidServe.saveUserSelectedList(this.userSelectedList);
   }
-
 
   /***************************************************************************\
       COMPANY MASTER LIST MANIPULATION
@@ -83,11 +85,19 @@ yearRange: yearSlider;
     //If nothing is in the list we can just amend
     if(this.userSelectedList.length === 0 ){
       this.addCompanyPlus(company)
+
+      // Set the flag to prevent mixing Yearly and Quarterly Results
+      this.jeriod = company.period === "year" ?  true : false;
     } else {
 
       // Check to make sure company doesn't already belong to array
       try{
+        //Check: NOT MIXING QUARTERLY AND YEARLY RESUTLS
+        if( this.jeriod === true && company.period === "quarter" ){
+          throw "crossover"
+        }
 
+        // Loog through each Company we have alread saved
         this.userSelectedList.forEach(userCmp => {
  
           //If we find company exists, throw ourselves out of array and prevent from ammending
@@ -98,13 +108,21 @@ yearRange: yearSlider;
         }) //for each
 
         //Company doesn't exist and can be added
-        this.addCompanyPlus(company)
+         this.addCompanyPlus(company)
 
       } catch (company) {
+        console.log("throwing " + company)
         if (company != "exists") throw company;
-        this.msgServe.sendToast("Company Already Exists", "Add Company",4);
-      }
         
+        switch (company) {
+          case 'exists': 
+            this.msgServe.sendToast("Company Already Exists", "Add Company",4);
+            break;
+          case 'crossover':
+            this.msgServe.sendToast("Cannot Mix Yearly and Quarterly Results","Add Company" ,4);
+            break;
+        } 
+      }
     }
   }
 
@@ -127,7 +145,9 @@ yearRange: yearSlider;
   public dropCompanyMasterList(id: number){
     for(let i = 0; i < this.companyMasterList.length; i++){
       if(this.companyMasterList[i].id === id) {
-        this.analMidServe.deleteReferenceCompanyMasterList(this.companyMasterList[i].name)
+        //Important: we save names into the ReferenceCompanyMasterList with their ammended period: Year v Quarter
+        let newName = this.companyMasterList[i].name + this.companyMasterList[i].period
+        this.analMidServe.deleteReferenceCompanyMasterList(newName)
         this.msgServe.sendToast("Removed " + this.companyMasterList[i].name,"Remove Company",2);
         this.companyMasterList.splice(this.companyMasterList.indexOf(this.companyMasterList[i]),1);
         break;

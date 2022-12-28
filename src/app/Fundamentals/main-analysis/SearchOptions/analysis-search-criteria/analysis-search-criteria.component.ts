@@ -77,12 +77,13 @@ listOfCategories: string[] = [];
    if(this.selectedCompany != "" && this.periodSelected != "") {
 
      //Check to make sure company doesn't already exist
-     if(!this.analMidService.checkRefernceIfCompanyExists(this.selectedCompany)){
+     if(!this.analMidService.checkRefernceIfCompanyExists(this.selectedCompany, this.periodSelected)){
 
        this.analMidService.getCompany(this.selectedCompany, this.periodSelected, this.listOfCategories)
 
      } else {
 
+      this.messageService.sendToast("You cannot add a duplicate company " + this.selectedCompany, "Duplicate", 2)
       this.messageService.addError("You cannot add a duplicate company " + this.selectedCompany + " already exists")
      
     }

@@ -29,7 +29,7 @@ export class DisplayAdvancedTableComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-
+    console.log("display advanced table")
   }
 
   /***********************= FUNCTIONS TO DISPLAY DATA IN TABLES =***********************/
@@ -237,10 +237,6 @@ export class DisplayAdvancedTableComponent implements OnInit {
     }
     //to 2 decimal places and convert to number
     return +temp.toFixed(2);
-  }
-
-  public execute(){
-    this.listOfCompanies.splice(0)
   }
 
  

@@ -1,5 +1,5 @@
 <div style="margin-top: 50px;"> 
-    <div class="nav" style="margin-left: 50px;">
+    <div class="nav borderShot" style="margin-left: 50px;">
 
         <!--DROP DOWN OF COMPANIES IN DB-->
         <div ngbDropdown>
@@ -7,7 +7,7 @@
             <div ngbDropdownMenu >
                 <button ngbDropdownItem
                     *ngFor="let company of companyMasterList">
-                        {{company.id}}.  {{company.name}}
+                        {{company.id}}.  {{company.name}} ( {{company.period}} )
                         <div  style="float: right; text-align: center;">
                             <!--CHECK BUTTON-->
                             <span role="button" 
@@ -34,7 +34,7 @@
              </button>   
                 <div ngbDropdownMenu>
                     <button ngbDropdownItem *ngFor="let cmp of userSelectedList">
-                    {{cmp.id}}.  {{cmp.name}}
+                    {{cmp.id}}.  {{cmp.name}} ( {{cmp.period}} )
                     <div  style="float: right; text-align: center;">
                         <!--DELETE BUTTON-->
                         <span role="button" 
@@ -72,6 +72,11 @@
                 <button ngbDropdownItem (click)="removeAllCategories()">Remove All</button>
             </div>
         </div>
+
+        &nbsp; &nbsp; &nbsp;
+        <!--DISPLAY PROFILE DATA OF COMPANIES SELECTED-->
+        <button class="btn btn-warning">PROFILES</button>
+
     </div>
 
     <!----DISPLAY TABLES ONCE COMPANIES HAVE BEEN SELECTED---->

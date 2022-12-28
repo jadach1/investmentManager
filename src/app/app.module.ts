@@ -24,6 +24,7 @@ import { DisplaySingleCompanyComponent }     from './Fundamentals/main-analysis/
 import { CustomDropdownDirective }           from './Directives/custom-dropdown.directive';
 import { DisplayAdvanceComponent }           from './Fundamentals/main-analysis/Display/display-advance/display-advance.component';
 import { DisplayAdvancedTableComponent } from './Fundamentals/main-analysis/Display/display-advance/display-advanced-table/display-advanced-table.component';
+import { DisplayProfilesComponent } from './Fundamentals/main-analysis/Display/display-profiles/display-profiles.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { DisplayAdvancedTableComponent } from './Fundamentals/main-analysis/Disp
     CustomDropdownDirective,
     DisplayAdvanceComponent,
     DisplayAdvancedTableComponent,
+    DisplayProfilesComponent,
   ],
   imports: [
     BrowserModule, 

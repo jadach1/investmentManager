@@ -25,6 +25,7 @@ db.transactions           = require('../model/transactions.model.js')(sequelize,
 db.archivedtransactions   = require('../model/archivedTransactions.model.js')(sequelize, Sequelize);
 db.contributions          = require('../model/contributions.model.js')(sequelize, Sequelize);
 db.owners                 = require('../model/owners.model.js')(sequelize, Sequelize);
+db.profile                = require('../model/Analysing/profile.model')(sequelize, Sequelize);
 
 module.exports = db;
 

@@ -1,7 +1,7 @@
 import { Injectable }              from '@angular/core';
 import { Observable }             from 'rxjs';
 import {MessageService}            from '../Messages/message.service'
-import {Company}                   from '../../../Models/Analyser/Company'
+import {Company, companyProfileCreation}                   from '../../../Models/Analyser/Company'
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 const httpOptions = {
@@ -84,6 +84,17 @@ export class AnalysisService {
     return this.http.get<object>(url);
   }
 
+  /*************************************
+   * POST DATA
+   /************************************* */
+
+   postCompanyProfile(profile: companyProfileCreation):Observable<object> {
+    let url = "http://localhost:8080/api/createProfile";
+    console.log("yes")
+    console.log(profile)
+    return this.http.post<companyProfileCreation>(url, profile);
+  }
+
   /*****************************************
    *  CALLS TO FOREIGN API
    * *************************************** */
@@ -105,8 +116,11 @@ export class AnalysisService {
       }
     }
   
+    //Create a Proflie
     getCompanyProfile(symbol: string):Observable<object> {
       let url = 'https://financialmodelingprep.com/api/v3/profile/'+symbol+'?apikey=3340dea2b67650a5e57a77796910cb55'
       return this.http.get<object>(url);
     }
+
+ 
 }

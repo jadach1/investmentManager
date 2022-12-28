@@ -8,12 +8,13 @@
 
 .bottomBorder{
     border-bottom: 1px;
-    border-bottom-color: aqua;
+    border-bottom-color: navy;
     border-bottom-style: solid;
     color: blueviolet;
 }
 .rightBorder{
-    border-right: 1px;
-    border-right-color: aqua;
+    border-right: 5px;
+    border-right-color:navy;
     border-right-style: solid;
+    text-align: right;
 }
