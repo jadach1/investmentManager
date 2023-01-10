@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy, OnChanges } from '@angular/core';
-import { map } from 'rxjs/operators';
-import {CompanyResults, Company} from '../../../../../Models/Analyser/Company'
-import {AnalysisMidwayService} from '../../../../Services/Analyser/analysis-midway.service'
-import {AnalysisService} from '../../../../Services/Analyser/analysis.service'
-import {MessageService} from '../../../../Services/Messages/message.service'
-import {ColourGeneratorService} from '../../../../Services/Misc/colour-generator.service'
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { map }                          from 'rxjs/operators';
+import {CompanyResults, Company}        from '../../../../../Models/Analyser/Company'
+import {AnalysisMidwayService}          from '../../../../Services/Analyser/analysis-midway.service'
+import {MessageService}                 from '../../../../Services/Messages/message.service'
+import {ColourGeneratorService}         from '../../../../Services/Misc/colour-generator.service'
 
 //Used to display a range of years for the user, cooperates with yearList
 interface yearSlider{
@@ -22,30 +21,31 @@ interface yearSlider{
 export class DisplayAdvanceComponent implements OnInit, OnDestroy {
 
 companyMasterList: CompanyResults[] = [];
-userSelectedList: CompanyResults[] = [];
+userSelectedList:  CompanyResults[] = [];
 categoryMasterList: string[] = [];
 categoriesSelected: string[] = [];
 
-direction: boolean    = true //For either in Descending or Ascending order, true = descending
-viewAs: boolean       = true; //For displaying either in $ or %
-displayIn: string     = "default"; //For displaying in its default form or in thousands or millions.
-displayFormat: string = "Precise"; //Display based on the year of statement or just in uniformity
+direction:     boolean       = true //For either in Descending or Ascending order, true = descending
+viewAs:        boolean       = true; //For displaying either in $ or %
+displayIn:     string        = "default"; //For displaying in its default form or in thousands or millions.
+displayFormat: string        = "Precise"; //Display based on the year of statement or just in uniformity
 
-yearList:  number[]   = [];  // Used to display all the years available in DB for company financials
+yearList:    string[]   = [];  // Used to hold all the years available in DB for company financials
+displayList: string[]   = [];  // Used to display all the periods available 
 yearRange: yearSlider;
 
-jeriod: boolean       = true; // True is for Annual as False is for Quarterly
+period: boolean       = true; // True is for Annual as False is for Quarterly
 
   constructor(private analMidServe: AnalysisMidwayService,
-              private analService: AnalysisService,
               private msgServe: MessageService,
               public colourGen: ColourGeneratorService) { }
 
   ngOnInit(): void {
 
     this.companyMasterList = this.analMidServe.getMasterList();
+
     //If we exit out of this compoenent it will delete the userSelectedList, so this is a failsafe to retrieve it
-    this.userSelectedList = this.analMidServe.getUserSelectedList();
+     this.userSelectedList = this.analMidServe.getUserSelectedList();
 
     this.analMidServe.getCategories()
                       .pipe( map( (categories: Object) => {
@@ -60,18 +60,11 @@ jeriod: boolean       = true; // True is for Annual as False is for Quarterly
                      .subscribe(
                         CAT => {this.categoryMasterList = CAT},
                         err => this.msgServe.sendToast("Error Getting Categories","Display Advanced ", 2),
+                        () => console.log("display advanced subscribed")
                      )
-
-     this.analMidServe.getYears()
-                      .subscribe( 
-                                res => this.yearList = res, 
-                                err => this.msgServe.sendToast("Failure to get years","year down",2),
-                                ()  => this.createYearRange()
-                                )
   }
 
   ngOnDestroy(): void {
-      console.log("Saving Users Selection")
        //we need to save the userSelectedList or all companies will be lost
       this.analMidServe.saveUserSelectedList(this.userSelectedList);
   }
@@ -82,46 +75,68 @@ jeriod: boolean       = true; // True is for Annual as False is for Quarterly
 
   /* Iterate through all members of the userSelectedList to see if company we are addomg already exists */
   public addCompany(company: CompanyResults) {
+    
     //If nothing is in the list we can just amend
-    if(this.userSelectedList.length === 0 ){
-      this.addCompanyPlus(company)
+     if(this.userSelectedList.length === 0 ){
+      
+       this.addCompanyPlus(company)
 
-      // Set the flag to prevent mixing Yearly and Quarterly Results
-      this.jeriod = company.period === "year" ?  true : false;
-    } else {
+       //Create List of Years
+       this.analMidServe.getYears()
+       .subscribe( 
+                 res => this.yearList = res, 
+                 err => this.msgServe.sendToast("Failure to get years","year down",2),
+                 ()  => this.createYearRange()
+                        //If Period is Quarterly we will need to format the list of years
+                        .then( res =>  
+                                      { 
+                                      if(company.period === "quarter"){
+                                        this.formatYearList()
+                                        this.period = false;
+                                      } else 
+                                        this.period = true;
+                                        this.displayList = this.yearList;
+                                      }
+                              )
+                 )
+
+    // THE LIST IS NOT EMPTY, Parse for duplicates or period issues
+     } else {
 
       // Check to make sure company doesn't already belong to array
       try{
-        //Check: NOT MIXING QUARTERLY AND YEARLY RESUTLS
-        if( this.jeriod === true && company.period === "quarter" ){
-          throw "crossover"
-        }
 
-        // Loog through each Company we have alread saved
-        this.userSelectedList.forEach(userCmp => {
+        //Check: NOT MIXING QUARTERLY AND YEARLY RESUTLS
+        if( this.period === true && company.period === "quarter" || this.period === false && company.period === "year" )
+            throw "crossover"
+        
+        // Loop through each Company we have alread saved
+         this.userSelectedList.forEach(userCmp => {
  
-          //If we find company exists, throw ourselves out of array and prevent from ammending
-          if(userCmp.id === company.id) {
+           //If we find company exists, throw ourselves out of array and prevent from ammending
+            if(userCmp.id === company.id) 
               throw "exists"
-          }
-          
+
         }) //for each
 
         //Company doesn't exist and can be added
          this.addCompanyPlus(company)
 
       } catch (company) {
-        console.log("throwing " + company)
-        if (company != "exists") throw company;
-        
-        switch (company) {
-          case 'exists': 
-            this.msgServe.sendToast("Company Already Exists", "Add Company",4);
-            break;
-          case 'crossover':
-            this.msgServe.sendToast("Cannot Mix Yearly and Quarterly Results","Add Company" ,4);
-            break;
-        } 
+
+          console.log("in addCompany::display-Advanced " + company)
+          
+          switch (company) {
+
+            case 'exists': 
+              this.msgServe.sendToast("Company Already Exists", "Add Company",4);
+              break;
+
+            case 'crossover':
+              this.msgServe.sendToast("Cannot Mix Yearly and Quarterly Results","Add Company" ,4);
+              break;
+
+          } 
       }
     }
   }
@@ -248,7 +263,7 @@ jeriod: boolean       = true; // True is for Annual as False is for Quarterly
     })
 
     //Flip years around in new array tempYears
-    let tempYears: number[] = [];
+    let tempYears: string[] = [];
     for(let i = 0;i < this.yearList.length;i++){
       tempYears.push(this.yearList[this.yearList.length - 1 - i]); //Copy for the tail end of the array 
     }
@@ -289,20 +304,56 @@ jeriod: boolean       = true; // True is for Annual as False is for Quarterly
     return this.colourGen.generateByLetter(str);
   }
 
+  //Used to check if we are ready to display the tables or not
   public userSelected(): boolean {
     return this.userSelectedList.length > 0 ? true: false;
   }
 
+  /***************************************************************************\
+      YEAR LIST FUNCTIONS
+  \****************************************************************************/
+
   /*Initialise the YearRange Object*/
-  private createYearRange() {
+  private createYearRange(): Promise<any> {
+    console.log("create year range")
+    console.log(this.yearList)
     if(this.yearList.length > 0){
         this.yearRange = {
-          minYear:   this.yearList[this.yearList.length - 1],
-          maxYear:   this.yearList[0],
+          minYear:   +this.yearList[this.yearList.length - 1],
+          maxYear:   +this.yearList[0],
           thumbnail: true,
-          value:     this.yearList[this.yearList.length - 1]
+          value:     +this.yearList[this.yearList.length - 1]
         }
     }
+    // Just practising with Promise
+     return new Promise((res, rej) => {
+       let name = "string" 
+       res(name);
+     });
   }
 
+  /*ONLY IF PERIOD IS FALSE:QUARTERLY*/
+  private formatYearList(): void {
+
+     let size = this.yearList.length * 4;
+     let newList = new Array<string>(size);
+  
+     /* Loop based on variable size newList
+        i references legacy yearList, will incriment every 4th iteration
+        k represents a quarter, will reset to 4 after it reaches 0
+        c is the counter which represents the size of the new array
+     */
+     for(let i = 0, k = 4, c=0; c < size; k--, c++){
+      // Check if we need to incriment varaible    
+      if(k === 0){k = 4;i++;}
+
+      //Save new slot in Array
+      newList[c] = "Q" + k + " " + this.yearList[i];
+     }
+
+     this.displayList = newList;
+  }
+
+ 
+    
 }

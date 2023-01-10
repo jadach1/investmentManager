@@ -1,9 +1,9 @@
 //Holds Data pertaining to a specific year like the revenue of 2020
 export class Company{
-  name: string;
-  quarter: number;
-  year: number;
-  data: Map<string,number>;  // Stores Revenue, EPS, Debt, etc
+  name:    string;
+  quarter: string;
+  year:    number;
+  data:    Map<string,number>;  // Stores Revenue, EPS, Debt, etc
 }
 
 //Holds Data pertaining to a specific company, for all of its years

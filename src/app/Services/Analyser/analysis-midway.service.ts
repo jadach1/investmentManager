@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import {count, isEmpty, map, tap}                  from 'rxjs/operators'
+import { map, tap}                  from 'rxjs/operators'
 import { Observable, Subject }         from 'rxjs';
 
 import {MessageService}          from '../../Services/Messages/message.service'
@@ -7,7 +7,6 @@ import {AnalysisService}         from './analysis.service'
 
 import {Company, 
         CompanyResults, 
-        companyOverviewMaster,
         companyProfileCreation}  from '../../../Models/Analyser/Company'
 
 
@@ -68,7 +67,7 @@ export class AnalysisMidwayService  {
         Loop through each keyword of the Individual Report to find a matching word i.e Revenue and Revenue
         Creates an array of strings, each representing an insert statement which we will send to DB 
     */
-   public async parseFinancialData(tempArray: Array<any>,statement: string,period: string): Promise<Array<string>>{
+   public async parseFinancialData(tempArray: Array<any>,statement: string,strPeriod: string): Promise<Array<string>>{
     
     if( tempArray == undefined){
       console.log("error, stock you are attempting to retrieve was not found")
@@ -90,22 +89,18 @@ export class AnalysisMidwayService  {
                     //Loop through each element until it matches the table name i.e Revenue to Revenue Table
                     if( table == key){
                       //Construct a statement
-                      let year: number   =  report.fillingDate.substring(0,4); 
-                      let month: number  =  report.fillingDate.substring(5);
-                      let symbol: string =  report.symbol;
-                      let value: number  =  +report[key];
+                      let year:   number  =  report.calendarYear.substring(0,4); 
+                      let period: number  =  report.period;
+                      let symbol: string  =  report.symbol;
+                      let value:  number  =  +report[key]; 
 
                        //If EPS truncate to 2 decimal places
-                       if(table === "eps"){
-                        console.log("eps")
-                        value = +value.toFixed(2);
-                      } if (table === "EPS"){
-                        console.log("EPS")
-                        value = +value.toFixed(2);
-                      }
+                       if(table === "eps" || table === "EPS")
+                            value = +value.toFixed(2);
+                      
                                                                               //report[key] will find the value for what [key] is: revenue, eps, cash
-                      let info    = symbol + "," + month + "," + year + "," + value;
-                      arrayOfData.push(`insert into financials (category,statement,period,symbol_date_value) values('${key}','${statement}','${period}','${info}');`)
+                      let info    = symbol + "," + period + "," + year + "," + value;
+                      arrayOfData.push(`insert into financials (category,statement,period,symbol_date_value) values('${key}','${statement}','${strPeriod}','${info}');`)
                     }
                   } // report loop
         });  //table loop
@@ -127,7 +122,6 @@ export class AnalysisMidwayService  {
                     tempMap.set(key,value);
                  }
                  
-                  console.log(tempMap)
                   tempArray.description = data[0].description;
                  // tempArray.description = tempMap.get("description");
                   tempArray.employees = +tempMap.get("fullTimeEmployees");
@@ -144,7 +138,7 @@ export class AnalysisMidwayService  {
                   return tempArray;
                 }) )
         .subscribe(
-                    res => {console.log(res), compProfile = res},
+                    res => compProfile = res,
                     err => console.log(err),
                     ()  => this.analService.postCompanyProfile(compProfile)
                                             .subscribe(
@@ -172,7 +166,8 @@ export class AnalysisMidwayService  {
     .pipe(tap(
       data => {
         if( Object.keys(data).length === 0) {
-          throw "casualty"
+          // Throw error, no data returned
+          throw "casualty, no data to be found for company " + companyName
         }
       }
     ))
@@ -184,27 +179,33 @@ export class AnalysisMidwayService  {
                             statement: string,
                             symbol_date_value: string}[]
               ) => {
-          
+ 
           let tempCompany: Company; // Holds the financial records for a specific year.
           let flag: boolean = false; //Check to see if company found
           
           //loop through each dataArray element
           //Goals, to map each category to their corresponding year
           dataArray.forEach(element => {
-
+         
             //Parse the values -Array- so we can evaluate a potential match: COMPANY NAME, DATE, YEAR, VALUE
              let values = element.symbol_date_value.split(",");
 
             //Check to see if there is already data in company
-            if (this.company.results.length != 0){   
+            if (this.company.results.length != 0  ){ 
+
               //Check if similar year exists
               this.company.results.forEach(companyYear => {
+
                 if(companyYear.year == +values[2]){
+
                   //update map value and key of this company; revenue, 200
                   companyYear.data.set(element.category,+values[3]);
+
                   //mark true that we found an existing year and no need to create a new company
                   flag = true;
+
                   return;
+
                   }  //if years match
                 }) // loop, master list
               } // if master list != 0 
@@ -213,16 +214,17 @@ export class AnalysisMidwayService  {
             // We did not find a matching year so therefore, we need to create a new company with a new year
               if(flag == false){
                 //Initialise New Company to push into Master List
-                tempCompany = new Company();
-                tempCompany.data = new Map();
-                tempCompany.name = values[0];
-                tempCompany.year = +values[2];
-                tempCompany.quarter = 0;
+                tempCompany         = new Company();
+                tempCompany.data    = new Map();
+                tempCompany.name    = values[0];
+                tempCompany.year    = +values[2];
+                tempCompany.quarter = values[1];
+                this.company.name   = values[0];
+                this.company.period = element.period;
                 tempCompany.data.set(element.category,+values[3]);
                 //Push new Company or updated company into List
-                this.company.results.push(tempCompany)
-                this.company.name = values[0];
-                this.company.period = element.period;
+                 this.company.results.push(tempCompany)
+
               } else {  //If flag is true, means we found a company and can skip to the next element
                 //Reset flag to false assuming company not found, until found
                 flag = false;
@@ -252,7 +254,7 @@ export class AnalysisMidwayService  {
                       },
 
                 err => {this.msgService.addError("Error getting search results for: " + companyName),
-                        this.msgService.sendToast("Error Company " + companyName + " For Period of + " + period + " Does Not Exist", "Search Error", 2),
+                        this.msgService.sendToast("Error Company " + companyName + " For Period of " + period + " Does Not Exist", "Search Error", 2),
                         this.msgService.addError(err)},
                         
                 ()  => { 
@@ -330,7 +332,6 @@ export class AnalysisMidwayService  {
     let flag: boolean = false;
     for(let i = 0; i < this.referenceCompanyMasterList.length; i++){
       if(name + period === this.referenceCompanyMasterList[i] ){
-        console.log(name+period + " vs " + this.referenceCompanyMasterList[i])
         flag = true;
         break;
       }
@@ -346,12 +347,12 @@ export class AnalysisMidwayService  {
                              }))
   }
 
-  public getYears(): Observable<number[]> {
+  public getYears(): Observable<string[]> {
      return this.analService.getAllYears()
                           .pipe(map( response => {
-                             let tempArray: number[] = [];
+                             let tempArray: string[] = [];
                             for(let i = 0; i < response[0].length; i++){
-                              tempArray.push(+response[0][i].year)
+                              tempArray.push(response[0][i].year)
                             }
                              return tempArray;
                           }));

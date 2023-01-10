@@ -12,11 +12,11 @@
       <tr>
         <th scope="col" 
             class="bottomBorder" 
-            *ngFor="let year of getYears()" >{{year}}</th>
+            *ngFor="let period of getPeriod()" >{{period}}</th>
       </tr>
-      <tr  class="bottomBorder" *ngFor="let company of displayCompanies()">
-        <th class="rightBorder" scope="row" >{{company}}</th>  
-        <td class="rightBorder" *ngFor="let value of fetchCategoryValue(company)"> {{value | currency}} 
+        <tr class="bottomBorder" *ngFor="let company of displayCompanies()">
+        <th class="rightBorder"  scope ="row" >{{company}}</th>  
+        <td class="rightBorder"  *ngFor="let value of fetchCategoryValue(company)"> {{value | currency}} 
           <span *ngIf="!displayedAs">&#37;</span>
         </td>
       </tr>

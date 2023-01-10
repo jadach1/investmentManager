@@ -13,12 +13,14 @@ export class DisplayAdvancedTableComponent implements OnInit {
   @Input() categorySelected: string = "";
   @Input() categoriesSelected: string[] = [];
 
-  @Input() displayIn: string; //Displayed in default, thousands or millions
-  @Input() displayedAs: boolean   = true; //True for $ and false for %
+  @Input() displayIn:     string;   //Displayed in default, thousands or millions
+  @Input() displayedAs:   boolean   = true; //True for $ and false for %
   @Input() displayFormat: string;   //Precision or uniform
-  @Input() direction: boolean     = true;// true for Descending
+  @Input() direction:     boolean   = true;// true for Descending
+  @Input() period:        boolean;  //Year t or Quarter f
 
-  @Input() yearList: number[] = []; //This gets automatically sorted in the display-advacned component
+  @Input() yearList:    number[] = []; //List of range of years
+  @Input() displayList: string[] = [];//A sorted and formatted list of periods to be displayed
   @Input() yearRange: {
         minYear: number;
         maxYear: number;
@@ -34,6 +36,11 @@ export class DisplayAdvancedTableComponent implements OnInit {
 
   /***********************= FUNCTIONS TO DISPLAY DATA IN TABLES =***********************/
 
+  public getPeriod(): Array<number|string> | void {
+    console.log("get period")
+    return this.displayList;
+  }
+  
   /*** RETURNS THE YEARS IN REFERENCE TO THE RANGE ***/
   public getYears(): Array<number|string> | void {
    //Descend?
@@ -41,6 +48,7 @@ export class DisplayAdvancedTableComponent implements OnInit {
       //Descending
       let difference = this.yearList.indexOf(this.yearRange.value);
       let newArray  = new Array<number|string>(difference + 1);
+      
 
       //Precise v Uniform
       if(this.displayFormat == "Precise"){
@@ -106,31 +114,40 @@ export class DisplayAdvancedTableComponent implements OnInit {
     return tempArray;
   }
 
-  /***  1. RETRIEVE DATA FOR DISPLAY BASED ON CATEGORY 
+  /***  
+   *    RESPONSIBLE FOR PUSHING A SINGLE COMPANIES VALUES - BASED ON CATEGORY - INTO AN ARRAY
+   *    THE ARRAY THE WILL HOUSE ALL VALUES FOR THE CATEGORY DESIRED UP TO A SPECIFIC YEAR - BASED ON YEARRANGE.VALUE
+   *    THE FUNCTION TAKES INTO ACCOUNT WHETHER OR NOT COMPANY-A HAS 2022 RESULTS VS COMPANY-B WHICH MAY ONLY HAVE RESULTS UP TO 2021
+   *    THIS FUNCTION ALSO NEEDS TO TAKE INTO ACCOUNT WHETHER WE ARE DISPLAYING YEARLY OR QUARTELRY RESULTS
+   * 
+        1. RETRIEVE DATA FOR DISPLAY BASED ON CATEGORY   
         2. LOCATE A MATCHING COMPANY NAME
-        3. EXTRACT DATA PERTAINING TO CATEGORY ***/
+        3. EXTRACT DATA PERTAINING TO DESIRED CATEGORY 
+        * yearList will affect the performance of quantity of Results
+                                                                        ***/
   public fetchCategoryValue(companyName: string): number[] | void {
     let tempArray = new Array<number>();
     try{
+      console.log("fetch")
            //1. Go through each company
           this.listOfCompanies.forEach( company => {
        
             //2. find the company we want to extract data from
             if ( company.name === companyName) {
 
-              //2.A. Only execute next seciton of code IF we want Precision relating to years
+              // //2.A. Only execute next seciton of code IF we want Precision relating to years
               if(this.displayFormat == "Precise"){
 
                   //Check to see what year this companies newest earnings are reported
-                  for(let i = 0; i < this.yearList.length; i++){
+                  for(let i = 0; i < this.displayList.length; i++){
 
                     //Check to see which year matches with the latest results
-                      if(this.yearList[i] == company.results[0].year) { 
+                      if(+this.displayList[i] == company.results[0].year) { 
                       //  console.log("found matching year " + this.yearList[i]);
                       break;
                     } else { 
                       //If we are descending or ascending and below the yearRange value, push 0
-                      if(this.yearList[i] >= this.yearRange.value && !this.direction || this.direction)
+                      if(+this.displayList[i] >= this.yearRange.value && !this.direction || this.direction)
                       {
                         tempArray.push(0); 
                       }     
@@ -140,16 +157,15 @@ export class DisplayAdvancedTableComponent implements OnInit {
                } //If
             
                 //3. Get each value based on desired category
-                company.results.forEach(period => {     
-
-                        //Ensure the year is greater than the minimum yearRange value
-                        if( period.year >= this.yearRange.value ){
-
+                company.results.forEach(compResults => {     
+   
+                        if( compResults.year >= this.yearRange.value ){
+                          
                           //Convert the value to thousands or millions. Exception is EPS, leave that alone
                           if(this.displayIn != "default"){
-                            tempArray.push(this.changeDisplay(period.data.get(this.categorySelected)));
+                            tempArray.push(this.changeDisplay(compResults.data.get(this.categorySelected)));
                           } else {
-                            tempArray.push(period.data.get(this.categorySelected));
+                            tempArray.push(compResults.data.get(this.categorySelected));
                           }
 
                         } else {
