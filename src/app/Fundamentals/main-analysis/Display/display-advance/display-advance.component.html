@@ -75,109 +75,19 @@
 
         &nbsp; &nbsp; &nbsp;
 
-        <!--------- DISPLAY OPTIONS ONCE COMPANY IS SELECTED ------------->
-        <div ngbDropdown>
-            <button ngbDropdownToggle class="btn-outline-success">Display Options</button>
-            <div ngbDropdownMenu>
-                <label ngbDropdownItem>Direction <button>Ascending</button> | <button>Descending</button></label>
-            </div>
-        </div>
         &nbsp; &nbsp; &nbsp;
         <!--DISPLAY PROFILE DATA OF COMPANIES SELECTED-->
         <button class="btn btn-warning">PROFILES</button>
 
     </div>
 
-  
-      
-    <!----DISPLAY TABLES ONCE COMPANIES HAVE BEEN SELECTED---->
-    <div *ngIf="userSelected()" style="margin-top: 50px;">
-        <div  
-            *ngFor="let cat of categoriesSelected"
-            [ngStyle]="{'border-color': getColour(cat)}"
-            style="border-style: solid; border-width: 1px; margin-bottom: 50px; "
-            >
-            <!--HEADER -->
-            <h2 [ngStyle]="{'color': getColour(cat)}" style="border:1px; border-style: solid; border-color: red;">{{cat}}</h2>
-
-                  <!-------------  OPTIONS TO CHANGE WHAT WE WANT TO DISPLAY  ----------------->
-
-    <div>
-        <!--DOWNWARD ARROW SIGN-->
-        <span 
-        role="button" 
-        style="margin-left: 50px; color: black; background-color: aliceblue;"
-        (click)="setDirection()"> 
-        &#8595; | &#8593;</span> 
-
-        <!--DOLLAR SIGN-->
-        <span 
-        role="button" 
-        style="margin-left: 50px; color: green; background-color: aliceblue;"
-        (click)="displayAs(true)"> 
-            &#36;</span>
-
-        <!--pERCENT SIGN-->
-        <span 
-                role="button" 
-                style="color: black; background-color: aliceblue;"
-                (click)="displayAs(false)"> 
-        &#37;</span>
-
-        <!--THOUSANDS OR MILLIONS SIGN-->
-        <span 
-        role="button" 
-        style="margin-left: 50px; color: green; background-color: aliceblue;"
-        (click)="toBeDisplayedIn()"> 
-            {{displayIn}}</span>
-
-        <!--DISPLAY DATA BY YEARS STATED IN DB OR DISPLAY EVENLY-->
-        <span 
-        role="button" 
-        style="margin-left: 50px; color: rgb(124, 124, 189); background-color: aliceblue;"
-        (click)="formatDisplay()" > 
-            {{displayFormat}}</span>
-
-        <!--CLOSE BUTTON-->
-        <span 
-        role="button" 
-        style="float: right;"
-        (click)="dropCategory(cat)"> 
-           &#10060;</span>
-
-        <!--DISPLAY THE YEAR RANGE-->
-        <div class="row">
-            <div class="col-sm-2" style="margin-left: 50px;">
-                {{yearRange.minYear}}
-            </div>
-            <mat-slider class        ="col-sm-4 slider"
-                        [max]        ="yearRange.maxYear" 
-                        [min]        ="yearRange.minYear" 
-                        [thumbLabel] ="true"
-                        [(ngModel)]   ="yearRange.value"
-                        >
-            </mat-slider>
-                 {{yearRange.maxYear}}
-        </div>
-
-    </div> <!-------DISPLAY OPTIONS-->
-    
-         
-
-            <!--TABLE BELOW-->
-            <app-display-advanced-table 
+  <div *ngIf="userSelected()" style="margin-top: 50px">
+    <app-display-advanced-create
                         [categorySelected]  = "cat" 
                         [categoriesSelected]= "categoriesSelected"
                         [listOfCompanies]   = "userSelectedList"
-                        [yearList]          = "yearList"
-                        [displayList]       = "displayList"
-                        [displayedAs]       = "viewAs"
-                        [direction]         ="direction"
-                        [yearRange]         ="yearRange"
-                        [displayIn]         ="displayIn"
-                        [displayFormat]     ="displayFormat"
-                        [period]            ="period">      
-            </app-display-advanced-table>
-        </div>
-    </div>
+                        [period]            = "period">      
+    </app-display-advanced-create>
+  </div>
+      
 </div>

@@ -12,7 +12,7 @@
       <tr>
         <th scope="col" 
             class="bottomBorder" 
-            *ngFor="let period of getPeriod()" >{{period}}</th>
+            *ngFor="let period of displayTimePeriods()" >{{period}}</th>
       </tr>
         <tr class="bottomBorder" *ngFor="let company of displayCompanies()">
         <th class="rightBorder"  scope ="row" >{{company}}</th>  

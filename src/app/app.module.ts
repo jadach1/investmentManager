@@ -23,8 +23,9 @@ import { AnalysisSearchCriteriaComponent }   from './Fundamentals/main-analysis/
 import { DisplaySingleCompanyComponent }     from './Fundamentals/main-analysis/Display/display-single-company/display-single-company.component';
 import { CustomDropdownDirective }           from './Directives/custom-dropdown.directive';
 import { DisplayAdvanceComponent }           from './Fundamentals/main-analysis/Display/display-advance/display-advance.component';
-import { DisplayAdvancedTableComponent } from './Fundamentals/main-analysis/Display/display-advance/display-advanced-table/display-advanced-table.component';
-import { DisplayProfilesComponent } from './Fundamentals/main-analysis/Display/display-profiles/display-profiles.component';
+import { DisplayAdvancedTableComponent }     from './Fundamentals/main-analysis/Display/display-advance/display-advanced-create/display-advanced-table/display-advanced-table.component';
+import { DisplayProfilesComponent }          from './Fundamentals/main-analysis/Display/display-profiles/display-profiles.component';
+import { DisplayAdvancedCreateComponent }    from './Fundamentals/main-analysis/Display/display-advance/display-advanced-create/display-advanced-create.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { DisplayProfilesComponent } from './Fundamentals/main-analysis/Display/d
     DisplayAdvanceComponent,
     DisplayAdvancedTableComponent,
     DisplayProfilesComponent,
+    DisplayAdvancedCreateComponent,
   ],
   imports: [
     BrowserModule, 

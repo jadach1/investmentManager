@@ -25,15 +25,6 @@ userSelectedList:  CompanyResults[] = [];
 categoryMasterList: string[] = [];
 categoriesSelected: string[] = [];
 
-direction:     boolean       = true //For either in Descending or Ascending order, true = descending
-viewAs:        boolean       = true; //For displaying either in $ or %
-displayIn:     string        = "default"; //For displaying in its default form or in thousands or millions.
-displayFormat: string        = "Precise"; //Display based on the year of statement or just in uniformity
-
-yearList:    string[]   = [];  // Used to hold all the years available in DB for company financials
-displayList: string[]   = [];  // Used to display all the periods available 
-yearRange: yearSlider;
-
 period: boolean       = true; // True is for Annual as False is for Quarterly
 
   constructor(private analMidServe: AnalysisMidwayService,
@@ -79,26 +70,8 @@ period: boolean       = true; // True is for Annual as False is for Quarterly
     //If nothing is in the list we can just amend
      if(this.userSelectedList.length === 0 ){
       
+       company.period === "quarter" ? this.period = false : this.period = true; 
        this.addCompanyPlus(company)
-
-       //Create List of Years
-       this.analMidServe.getYears()
-       .subscribe( 
-                 res => this.yearList = res, 
-                 err => this.msgServe.sendToast("Failure to get years","year down",2),
-                 ()  => this.createYearRange()
-                        //If Period is Quarterly we will need to format the list of years
-                        .then( res =>  
-                                      { 
-                                      if(company.period === "quarter"){
-                                        this.formatYearList()
-                                        this.period = false;
-                                      } else 
-                                        this.period = true;
-                                        this.displayList = this.yearList;
-                                      }
-                              )
-                 )
 
     // THE LIST IS NOT EMPTY, Parse for duplicates or period issues
      } else {
@@ -242,63 +215,8 @@ period: boolean       = true; // True is for Annual as False is for Quarterly
   }
 
   /***************************************************************************\
-      SORTING DATA 
-  \****************************************************************************/
-
-  //Sets the direction so we know hwo to calculate the sums of % increases
-  public setDirection() {
-    this.direction = !this.direction;
-    this.sortMasterList();
-  }
-
-  // Makes sure this list is sorted by Year - Ascending or Descending
-  public sortMasterList() {
-    //Flips the companies around in reverse
-    this.userSelectedList.forEach( company => {
-      let tempCompany = new Array<Company>();
-      for(let i = 0;i < company.results.length;i++){
-        tempCompany.push(company.results[company.results.length - 1 - i]); // copy from the back end of the array
-      }
-      company.results = tempCompany;
-    })
-
-    //Flip years around in new array tempYears
-    let tempYears: string[] = [];
-    for(let i = 0;i < this.yearList.length;i++){
-      tempYears.push(this.yearList[this.yearList.length - 1 - i]); //Copy for the tail end of the array 
-    }
-    this.yearList = tempYears; // Reset the yearList array
-  }
-
-
-  /***************************************************************************\
       MISC FUNCTIONS
   \****************************************************************************/
-
-  //For displaying either in $ or %
-  public displayAs(flag: boolean) {
-    this.viewAs = flag;
-  }
-
-  /*CHANGES HOW WE DISPLAY A NUMBER, IN ITS NATURAL STATE, IN MILLIONS OR THOUSANDS */
-  public toBeDisplayedIn() {
-    switch (this.displayIn) {
-      case "default":
-          this.displayIn = "millions";
-          break;
-      case "millions":
-        this.displayIn = "thousands";
-        break; 
-      default:
-        this.displayIn = "default";
-        break; 
-    }
-  }
-
-   /*CHANGES HOW WE DISPLAY RESULTS*/
-   public formatDisplay() {
-    this.displayFormat === "Precise" ? this.displayFormat = "Uniform" : this.displayFormat = "Precise";
-  }
 
   public getColour(str: string): String {
     return this.colourGen.generateByLetter(str);
@@ -306,54 +224,11 @@ period: boolean       = true; // True is for Annual as False is for Quarterly
 
   //Used to check if we are ready to display the tables or not
   public userSelected(): boolean {
-    return this.userSelectedList.length > 0 ? true: false;
+    if(this.userSelectedList.length > 0 && this.categoriesSelected.length > 0)
+      return true;
+    else
+      return false;
   }
-
-  /***************************************************************************\
-      YEAR LIST FUNCTIONS
-  \****************************************************************************/
-
-  /*Initialise the YearRange Object*/
-  private createYearRange(): Promise<any> {
-    console.log("create year range")
-    console.log(this.yearList)
-    if(this.yearList.length > 0){
-        this.yearRange = {
-          minYear:   +this.yearList[this.yearList.length - 1],
-          maxYear:   +this.yearList[0],
-          thumbnail: true,
-          value:     +this.yearList[this.yearList.length - 1]
-        }
-    }
-    // Just practising with Promise
-     return new Promise((res, rej) => {
-       let name = "string" 
-       res(name);
-     });
-  }
-
-  /*ONLY IF PERIOD IS FALSE:QUARTERLY*/
-  private formatYearList(): void {
-
-     let size = this.yearList.length * 4;
-     let newList = new Array<string>(size);
-  
-     /* Loop based on variable size newList
-        i references legacy yearList, will incriment every 4th iteration
-        k represents a quarter, will reset to 4 after it reaches 0
-        c is the counter which represents the size of the new array
-     */
-     for(let i = 0, k = 4, c=0; c < size; k--, c++){
-      // Check if we need to incriment varaible    
-      if(k === 0){k = 4;i++;}
-
-      //Save new slot in Array
-      newList[c] = "Q" + k + " " + this.yearList[i];
-     }
-
-     this.displayList = newList;
-  }
-
  
     
 }

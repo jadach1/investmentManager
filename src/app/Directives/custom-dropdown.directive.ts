@@ -6,7 +6,7 @@ import { Directive, HostListener, HostBinding } from '@angular/core';
 export class CustomDropdownDirective {
   @HostBinding('class.show') customList: boolean = true;
   @HostListener('click') mouseclick(){
-    console.log("working " + this.customList)
+    console.log("working CustomDropdownDirective " + this.customList)
     // this.customList = !this.customList;
   }
   constructor() { }

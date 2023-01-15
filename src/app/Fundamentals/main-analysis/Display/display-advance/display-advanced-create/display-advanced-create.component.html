@@ -1,0 +1,72 @@
+<div class="outline">
+    <div>
+        <!--DOWNWARD ARROW SIGN-->
+        <span 
+        role="button" 
+        style="margin-left: 50px; color: black; background-color: aliceblue; size: initial * 2;"
+        (click)="setDirection()"> 
+        &#8595; | &#8593;</span> 
+
+        <!--DOLLAR SIGN-->
+        <span 
+        role="button" 
+        style="margin-left: 50px; color: green; background-color: aliceblue;"
+        (click)="displayAs(true)"> 
+            &#36;</span>
+
+        <!--pERCENT SIGN-->
+        <span 
+                role="button" 
+                style="margin-left: 50px; color: black; background-color: aliceblue;"
+                (click)="displayAs(false)"> 
+        &#37;</span>
+
+        <!--THOUSANDS OR MILLIONS SIGN-->
+        <span 
+        role="button" 
+        style="margin-left: 50px; color: green; background-color: aliceblue;"
+        (click)="toBeDisplayedIn()"> 
+            {{displayIn}}</span>
+
+        <!--DISPLAY THE YEAR RANGE-->
+        <div class="row">
+            <div class="col-sm-2" style="margin-left: 50px;">
+                {{yearRange.minYear}}
+            </div>
+            <mat-slider class        ="col-sm-4 slider"
+                        [max]        ="yearRange.maxYear" 
+                        [min]        ="yearRange.minYear" 
+                        [thumbLabel] ="true"
+                        [(ngModel)]   ="yearRange.value"
+                        >
+            </mat-slider>
+                 {{yearRange.maxYear}}
+                 <button class="btn btn-success" (click)="readjustDisplayList()"><span>Enter</span></button>
+        </div>
+
+    </div> 
+
+    <div  
+         *ngFor="let cat of categoriesSelected"
+         [ngStyle]="{'border-color': getColour(cat)}"
+         style="border-style: solid; border-width: 1px; margin-bottom: 50px; "
+    >
+        <!--HEADER -->
+        <h2 [ngStyle]="{'color': getColour(cat)}" style="border:1px; border-style: solid; border-color: red;">{{cat}}</h2>
+
+      <!--CLOSE BUTTON-->
+      <span 
+      role="button" 
+      style="float: right;"
+      (click)="dropCategory(cat)"> 
+         &#10060;</span>
+                
+        <!-------------  OPTIONS TO CHANGE WHAT WE WANT TO DISPLAY  ----------------->
+
+        <!--TABLE BELOW-->
+        <app-display-advanced-table
+                    [categorySelected]  = "cat" 
+                    [displayList]       = "yearListFinal">      
+        </app-display-advanced-table>
+    </div>
+</div>
