@@ -39,20 +39,19 @@ export class DisplayAdvancedCreateComponent implements OnInit {
   yearListBeta:       string[] = [];// Transformed list of years
   yearListFinal:      string[] = [];// Final list, with quarterly results
   yearRange: {
-        minYear:   number;
-        maxYear:   number;
-        thumbnail: boolean;
-        value:     number;
-        oldValue:  number
+        minYear:    number;
+        maxYear:    number;
+        thumbnail:  boolean;
+        desiredMin: number;
+        desiredMax: number;
+        currentMin: number;
+        currentMax: number;
   };
 
   constructor(private analMidServe: AnalysisMidwayService, 
               private msgServe: MessageService,
-              private colourGen: ColourGeneratorService) { }
-
-  ngOnInit(): void {
-
-     //Create List of Years
+              private colourGen: ColourGeneratorService) { 
+                 //Create List of Years
      this.analMidServe.getYears()
      .subscribe( 
                res => this.yearListVanilla = res, 
@@ -65,6 +64,11 @@ export class DisplayAdvancedCreateComponent implements OnInit {
                             this.formatDisplayList();
                       }).catch( err => console.log(err))
                )
+              }
+
+  ngOnInit(): void {
+
+    
   }
 
   /***************************************************************************\
@@ -141,11 +145,13 @@ export class DisplayAdvancedCreateComponent implements OnInit {
     console.log(this.yearListVanilla)
     if(this.yearListVanilla.length > 0){
         this.yearRange = {
-          minYear:   +this.yearListVanilla[this.yearListVanilla.length - 1],
-          maxYear:   +this.yearListVanilla[0],
-          thumbnail: true,
-          value:     +this.yearListVanilla[this.yearListVanilla.length - 1],
-          oldValue:  +this.yearListVanilla[this.yearListVanilla.length - 1]
+          minYear:     +this.yearListVanilla[this.yearListVanilla.length - 1],
+          maxYear:     +this.yearListVanilla[0],
+          thumbnail:   true,
+          desiredMax:  +this.yearListVanilla[0],
+          desiredMin:  +this.yearListVanilla[this.yearListVanilla.length - 1],
+          currentMin:  +this.yearListVanilla[this.yearListVanilla.length - 1],
+          currentMax:  +this.yearListVanilla[0] 
         }
     }
     // Just practising with Promise
@@ -190,64 +196,64 @@ export class DisplayAdvancedCreateComponent implements OnInit {
   
   /* THIS FUNCTION WILL ADD OR SUBTRACT COMPANIES AND TIME-PERIODS ACCORDINGLY */
   public readjustDisplayList(): void {
-    // If value hasn't changed, return
-    if(this.yearRange.value === this.yearRange.oldValue) {
-      return null;
+
+    console.log("readjust")
+    console.log(this.yearRange)
+    // Max - Right value has changed
+    if(this.yearRange.desiredMax !== this.yearRange.currentMax){
+     
+      // If desired is under the Max - Subtract from front of array
+      if(this.yearRange.desiredMax < this.yearRange.currentMax){
+        
+        this.removeYears( this.yearRange.currentMax , 
+                          this.yearListBeta.indexOf( (this.yearRange.desiredMax + 1).toString() ));
+      }else{
+        // Add to front of Array.. Desired Max is greater than Current.
+         let difference = this.getDifference(this.yearRange.desiredMax, this.yearRange.currentMax)
+         this.appendToYearsFront(this.yearListVanilla.indexOf(this.yearRange.desiredMax.toString()), difference)
+      }
+
     }
 
-    //does value exist on current array
-     let index = this.yearListBeta.indexOf(this.yearRange.value.toString());
-    
-     let difference;
-    
-    // If Descending and want years appended
-    if(index === -1 ){
+    // Min - Left value has changed
+    if(this.yearRange.desiredMin !== this.yearRange.currentMin){
+      
+      // Subtract from Rear
+      if(this.yearRange.desiredMin > this.yearRange.currentMin){
+        this.removeYears(this.yearRange.desiredMin, 
+                         this.yearListBeta.indexOf( (this.yearRange.currentMin + 1).toString() ))
+      } else {
+        // Add to Rear..Desired Min is below Current, therefore adding
+         let difference = this.getDifference(this.yearRange.currentMin, this.yearRange.desiredMin)
+         this.appendToYearsRear(this.yearListVanilla.indexOf(this.yearRange.currentMin.toString()), difference)
+      }
 
-      difference = this.getDifferenceInYears();
+    }
 
-      //Grab position of value in original array
-       let base = this.yearRange.oldValue.toString();
-
-      //Grab position from new yearListVanilla
-       index = this.yearListVanilla.indexOf(base) + 1;
-
-      // Iterate the difference between the old and new years
-      for(let i = 0; i < difference; i++){
-
-        //Append from the yearListVanilla, start form the oldValue
-         let element = this.yearListVanilla[index + i];
-
-        //Add to the front of the array
-         this.yearListBeta.push(element)
-         
-      } 
-      // Pop off unwanted years
-    } else {
-
-      if(this.direction)
-        difference = this.yearRange.value - this.yearRange.oldValue;
-      else 
-        difference = this.yearRange.maxYear - this.yearRange.value;
-
-        console.log(difference + " difference: index = " + index)
-
-        // Get rid of everything after index, that is why we add 1 to the index
-         this.yearListBeta.splice(index + 1, difference)      
-    } 
-
-    // Make sure we set the oldValue to the value we are changing too
-    this.yearRange.oldValue = this.yearRange.value;
-
-    // See if we need to reformat the yearListFinal
+    //Assign to new list & check if quarterly
     if(!this.period)
       this.formatDisplayList();
+
   }
 
-  //Returns the difference between years 
- private getDifferenceInYears(): number {
-    if(this.direction)
-       return this.yearRange.oldValue - this.yearRange.value;
-    else
-       return  this.yearRange.value - this.yearRange.oldValue;
+  private getDifference(A: number, B: number): number {
+    return A - B;
   }
+
+  private appendToYearsFront(index: number, difference: number){
+    for(let i = 0; i < difference; i++){
+      this.yearListBeta.unshift(this.yearListVanilla[index + i])
+    }
+  }
+
+  private appendToYearsRear(index: number, difference: number){
+    for(let i = 0; i < difference; i++){
+      this.yearListBeta.push(this.yearListVanilla[index + i])
+    }
+  }
+
+  private removeYears(index: number, difference: number){
+    this.yearListBeta.splice(index, difference); 
+  }
+
 }

@@ -9,28 +9,22 @@ import {CompanyResults, Company} from '../../../../../../../Models/Analyser/Comp
 export class DisplayAdvancedTableComponent implements OnInit {
 
   @Input() listOfCompanies: CompanyResults[] = []
-  @Input() valueSelected: boolean = true;  //regarding $ or %
+
   @Input() categorySelected: string = "";
-  @Input() categoriesSelected: string[] = [];
 
   @Input() displayIn:     string;   //Displayed in default, thousands or millions
-  @Input() displayedAs:   boolean   = true; //True for $ and false for %
+  
   @Input() direction:     boolean   = true;// true for Descending
-  @Input() period:        boolean;  //Year t or Quarter f
 
-  @Input() yearList:    number[] = []; //List of range of years
+
+  
   @Input() displayList: string[] = [];//A sorted and formatted list of periods to be displayed
-  @Input() yearRange: {
-        minYear: number;
-        maxYear: number;
-        thumbnail: boolean;
-        value: number;
-  };
+
 
   constructor() { }
 
   ngOnInit(): void {
-    console.log("display advanced table 2")
+    console.log("display advanced table 3")
   }
 
   /***********************= FUNCTIONS TO DISPLAY DATA IN TABLES =***********************/

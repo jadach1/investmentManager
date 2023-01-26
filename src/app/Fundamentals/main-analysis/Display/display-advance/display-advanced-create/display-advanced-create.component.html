@@ -31,16 +31,12 @@
         <!--DISPLAY THE YEAR RANGE-->
         <div class="row">
             <div class="col-sm-2" style="margin-left: 50px;">
-                {{yearRange.minYear}}
+                
             </div>
-            <mat-slider class        ="col-sm-4 slider"
-                        [max]        ="yearRange.maxYear" 
-                        [min]        ="yearRange.minYear" 
-                        [thumbLabel] ="true"
-                        [(ngModel)]   ="yearRange.value"
-                        >
-            </mat-slider>
-                 {{yearRange.maxYear}}
+            <mat-slider class="slider" min="200" max="500" matSliderThumb>
+             
+              </mat-slider>
+                
                  <button class="btn btn-success" (click)="readjustDisplayList()"><span>Enter</span></button>
         </div>
 
@@ -66,7 +62,13 @@
         <!--TABLE BELOW-->
         <app-display-advanced-table
                     [categorySelected]  = "cat" 
-                    [displayList]       = "yearListFinal">      
+                    [displayList]       = "period ? yearListBeta : yearListFinal">      
         </app-display-advanced-table>
     </div>
 </div>
+<mat-slider class="slider" min="200" max="500" >
+    <input value="300" matSliderStartThumb>
+    <input value="400" matSliderEndThumb>
+  </mat-slider>
+
+  

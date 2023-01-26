@@ -14,6 +14,16 @@ export class CompanyResults{
   results: Company[] = [];  //For storing year 2020, 2019, 2018 etc
 }
 
+// Testing this out to see if there is anything useful
+export class comanyDisplayHolder{
+  companyName: string;
+  finanacialData: Map<string, comanyDisplayHolderdataSet>
+}
+// PArt 2 of the above
+export class comanyDisplayHolderdataSet{
+  data: Map<string, number>
+}
+
 //Displays an overview of the company
 export class companyOverviewMaster{
   symbol:       string;

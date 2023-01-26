@@ -7,7 +7,7 @@ import { ReactiveFormsModule,
 import { AppRoutingModule }          from './app-routing/app-routing.module';
 import {  ToastrModule }             from 'ngx-toastr'
 import {BrowserAnimationsModule}     from '@angular/platform-browser/animations'
-import {MatSliderModule} from '@angular/material/slider'
+import {MatSliderModule}             from '@angular/material/slider'
 
 
 import { AppComponent }              from './app.component';
