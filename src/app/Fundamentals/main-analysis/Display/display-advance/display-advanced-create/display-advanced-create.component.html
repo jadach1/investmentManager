@@ -33,9 +33,10 @@
             <div class="col-sm-2" style="margin-left: 50px;">
                 
             </div>
-            <mat-slider class="slider" min="200" max="500" matSliderThumb>
-             
-              </mat-slider>
+            <mat-slider class="slider" [min]="yearRange.minYear" [max]="yearRange.maxYear" discrete  >
+                <input value="yearRange.currentMin" matSliderStartThumb [(ngModel)]="yearRange.desiredMin">
+                <input value="yearRange.currentMax" matSliderEndThumb   [(ngModel)]="yearRange.desiredMax">
+            </mat-slider>
                 
                  <button class="btn btn-success" (click)="readjustDisplayList()"><span>Enter</span></button>
         </div>
@@ -62,13 +63,9 @@
         <!--TABLE BELOW-->
         <app-display-advanced-table
                     [categorySelected]  = "cat" 
-                    [displayList]       = "period ? yearListBeta : yearListFinal">      
+                    [displayList]       = "yearListFinal">      
         </app-display-advanced-table>
     </div>
 </div>
-<mat-slider class="slider" min="200" max="500" >
-    <input value="300" matSliderStartThumb>
-    <input value="400" matSliderEndThumb>
-  </mat-slider>
 
   

@@ -41,7 +41,6 @@ export class DisplayAdvancedCreateComponent implements OnInit {
   yearRange: {
         minYear:    number;
         maxYear:    number;
-        thumbnail:  boolean;
         desiredMin: number;
         desiredMax: number;
         currentMin: number;
@@ -58,7 +57,7 @@ export class DisplayAdvancedCreateComponent implements OnInit {
                err => this.msgServe.sendToast("Failure to get years","year down",2),
                ()  => this.createYearRange()
                       //copy list, then format if necessary
-                      .then( res =>  this.yearListBeta = [...this.yearListVanilla] )
+                      .then( res =>  this.yearListFinal = [...this.yearListVanilla] )
                       .then( res => {
                         if( !this.period )
                             this.formatDisplayList();
@@ -147,7 +146,6 @@ export class DisplayAdvancedCreateComponent implements OnInit {
         this.yearRange = {
           minYear:     +this.yearListVanilla[this.yearListVanilla.length - 1],
           maxYear:     +this.yearListVanilla[0],
-          thumbnail:   true,
           desiredMax:  +this.yearListVanilla[0],
           desiredMin:  +this.yearListVanilla[this.yearListVanilla.length - 1],
           currentMin:  +this.yearListVanilla[this.yearListVanilla.length - 1],
@@ -164,7 +162,7 @@ export class DisplayAdvancedCreateComponent implements OnInit {
   /*APPEND QUARTERLY DISPLAY*/
   private formatDisplayList(): void {
 
-    let size = this.yearListBeta.length * 4;
+    let size = this.yearListFinal.length * 4;
     let newList = new Array<string>(size);
  
     /* Loop based on variable size newList
@@ -179,7 +177,7 @@ export class DisplayAdvancedCreateComponent implements OnInit {
           if(k === 0){k = 4;i++;}
 
           //Save new slot in Array
-          newList[c] = "Q" + k + " " + this.yearListBeta[i];
+          newList[c] = "Q" + k + " " + this.yearListFinal[i];
           }
     } else {
       for(let i = 0, k = 1, c=0; c < size; k++, c++){
@@ -187,7 +185,7 @@ export class DisplayAdvancedCreateComponent implements OnInit {
         if(k === 5){k = 1;i++;}
 
         //Save new slot in Array
-        newList[c] = "Q" + k + " " + this.yearListBeta[i];
+        newList[c] = "Q" + k + " " + this.yearListFinal[i];
         }
     }
 
@@ -199,40 +197,20 @@ export class DisplayAdvancedCreateComponent implements OnInit {
 
     console.log("readjust")
     console.log(this.yearRange)
-    // Max - Right value has changed
-    if(this.yearRange.desiredMax !== this.yearRange.currentMax){
-     
-      // If desired is under the Max - Subtract from front of array
-      if(this.yearRange.desiredMax < this.yearRange.currentMax){
-        
-        this.removeYears( this.yearRange.currentMax , 
-                          this.yearListBeta.indexOf( (this.yearRange.desiredMax + 1).toString() ));
-      }else{
-        // Add to front of Array.. Desired Max is greater than Current.
-         let difference = this.getDifference(this.yearRange.desiredMax, this.yearRange.currentMax)
-         this.appendToYearsFront(this.yearListVanilla.indexOf(this.yearRange.desiredMax.toString()), difference)
-      }
-
-    }
-
-    // Min - Left value has changed
-    if(this.yearRange.desiredMin !== this.yearRange.currentMin){
-      
-      // Subtract from Rear
-      if(this.yearRange.desiredMin > this.yearRange.currentMin){
-        this.removeYears(this.yearRange.desiredMin, 
-                         this.yearListBeta.indexOf( (this.yearRange.currentMin + 1).toString() ))
-      } else {
-        // Add to Rear..Desired Min is below Current, therefore adding
-         let difference = this.getDifference(this.yearRange.currentMin, this.yearRange.desiredMin)
-         this.appendToYearsRear(this.yearListVanilla.indexOf(this.yearRange.currentMin.toString()), difference)
-      }
-
-    }
+    let indexBack = this.yearListVanilla.indexOf(this.yearRange.desiredMin.toString());
+    let indexFront  = this.yearListVanilla.indexOf(this.yearRange.desiredMax.toString());
+    
+    console.log(indexFront + " " + indexBack)
+    this.yearListFinal = [...this.yearListVanilla.slice(+indexFront,+indexBack + 1)]
+    
+    this.yearRange.currentMax = this.yearRange.desiredMax;
+    this.yearRange.currentMin = this.yearRange.desiredMin;
 
     //Assign to new list & check if quarterly
     if(!this.period)
       this.formatDisplayList();
+
+      console.log(this.yearListFinal)
 
   }
 
